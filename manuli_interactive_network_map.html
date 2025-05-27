@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manuli Hydraulics European Supply Chain Network</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        #map { height: 100vh; width: 100%; }
+        .title { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); 
+                 background: rgba(255,255,255,0.95); padding: 15px; border-radius: 8px; 
+                 z-index: 1000; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .legend { position: absolute; bottom: 20px; left: 20px; 
+                  background: rgba(255,255,255,0.95); padding: 15px; border-radius: 8px; 
+                  z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .legend-item { margin: 5px 0; display: flex; align-items: center; }
+        .legend-color { width: 20px; height: 20px; margin-right: 10px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="title">
+        <h2 style="margin: 0; color: #1F2937;">Manuli Hydraulics European Supply Chain Network</h2>
+        <p style="margin: 5px 0 0 0; color: #6B7280;">Interactive Distribution & Flow Optimization</p>
+    </div>
+    
+    <div class="legend">
+        <h4 style="margin: 0 0 10px 0;">Network Legend</h4>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #1E40AF;"></div>
+            <span>Production Plants</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #F59E0B;"></div>
+            <span>Regional Distribution Center</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #059669;"></div>
+            <span>Customer Markets</span>
+        </div>
+        <hr style="margin: 10px 0;">
+        <div style="font-size: 12px; color: #6B7280;">
+            <strong>Network Stats:</strong><br>
+            • Total Volume: 47,700 tonnes/month<br>
+            • Network Nodes: 23<br>
+            • Coverage: 12 Countries
+        </div>
+    </div>
+    
+    <div id="map"></div>
+    
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([51.5, 10.0], 5);
+        
+        // Add beautiful tile layer
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap © CartoDB',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+        
+        // Network data
+        var locations = [
+
+            {
+                "city": "Radomsko",
+                "lat": 51.0658,
+                "lng": 19.45,
+                "type": "Plant",
+                "volume": 8500,
+                "capacity": 12000.0,
+                "priority": "Standard"
+            },
+            {
+                "city": "Mysłowice",
+                "lat": 50.2085,
+                "lng": 19.1663,
+                "type": "Plant",
+                "volume": 7200,
+                "capacity": 10000.0,
+                "priority": "Standard"
+            },
+            {
+                "city": "Legnica",
+                "lat": 51.207,
+                "lng": 16.1619,
+                "type": "RDC",
+                "volume": 15700,
+                "capacity": 20000.0,
+                "priority": "Standard"
+            },
+            {
+                "city": "Berlin",
+                "lat": 52.52,
+                "lng": 13.405,
+                "type": "Market",
+                "volume": 2800,
+                "capacity": 0.0,
+                "priority": "High"
+            },
+            {
+                "city": "Munich",
+                "lat": 48.1351,
+                "lng": 11.582,
+                "type": "Market",
+                "volume": 2200,
+                "capacity": 0.0,
+                "priority": "High"
+            },
+            {
+                "city": "Hamburg",
+                "lat": 53.5511,
+                "lng": 9.9937,
+                "type": "Market",
+                "volume": 1800,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Paris",
+                "lat": 48.8566,
+                "lng": 2.3522,
+                "type": "Market",
+                "volume": 2600,
+                "capacity": 0.0,
+                "priority": "High"
+            },
+            {
+                "city": "Lyon",
+                "lat": 45.764,
+                "lng": 4.8357,
+                "type": "Market",
+                "volume": 1900,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Marseille",
+                "lat": 43.2965,
+                "lng": 5.3698,
+                "type": "Market",
+                "volume": 1400,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "London",
+                "lat": 51.5074,
+                "lng": -0.1278,
+                "type": "Market",
+                "volume": 2400,
+                "capacity": 0.0,
+                "priority": "High"
+            },
+            {
+                "city": "Birmingham",
+                "lat": 52.4862,
+                "lng": -1.8904,
+                "type": "Market",
+                "volume": 1600,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Manchester",
+                "lat": 53.4808,
+                "lng": -2.2426,
+                "type": "Market",
+                "volume": 1300,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Milan",
+                "lat": 45.4642,
+                "lng": 9.19,
+                "type": "Market",
+                "volume": 2100,
+                "capacity": 0.0,
+                "priority": "High"
+            },
+            {
+                "city": "Rome",
+                "lat": 41.9028,
+                "lng": 12.4964,
+                "type": "Market",
+                "volume": 1800,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Turin",
+                "lat": 45.0703,
+                "lng": 7.6869,
+                "type": "Market",
+                "volume": 1200,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Amsterdam",
+                "lat": 52.3676,
+                "lng": 4.9041,
+                "type": "Market",
+                "volume": 2000,
+                "capacity": 0.0,
+                "priority": "High"
+            },
+            {
+                "city": "Rotterdam",
+                "lat": 51.9244,
+                "lng": 4.4777,
+                "type": "Market",
+                "volume": 1700,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Brussels",
+                "lat": 50.8503,
+                "lng": 4.3517,
+                "type": "Market",
+                "volume": 1500,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Stockholm",
+                "lat": 59.3293,
+                "lng": 18.0686,
+                "type": "Market",
+                "volume": 1600,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Oslo",
+                "lat": 59.9139,
+                "lng": 10.7522,
+                "type": "Market",
+                "volume": 1400,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Copenhagen",
+                "lat": 55.6761,
+                "lng": 12.5683,
+                "type": "Market",
+                "volume": 1300,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Vienna",
+                "lat": 48.2082,
+                "lng": 16.3738,
+                "type": "Market",
+                "volume": 1100,
+                "capacity": 0.0,
+                "priority": "Medium"
+            },
+            {
+                "city": "Zurich",
+                "lat": 47.3769,
+                "lng": 8.5417,
+                "type": "Market",
+                "volume": 900,
+                "capacity": 0.0,
+                "priority": "Low"
+            }
+        ];
+        
+        // Define colors and icons
+        var colors = {
+            'Plant': '#1E40AF',
+            'RDC': '#F59E0B',
+            'Market': '#059669'
+        };
+        
+        // Add flow lines
+        var legnicaCoords = [51.2070, 16.1619];
+        
+        // Plants to RDC flows
+        locations.filter(loc => loc.type === 'Plant').forEach(function(plant) {
+            L.polyline([
+                [plant.lat, plant.lng],
+                legnicaCoords
+            ], {
+                color: colors.Plant,
+                weight: 6,
+                opacity: 0.8
+            }).addTo(map);
+        });
+        
+        // RDC to Markets flows
+        locations.filter(loc => loc.type === 'Market').forEach(function(market) {
+            var weight = market.volume > 1800 ? 4 : 2;
+            L.polyline([
+                legnicaCoords,
+                [market.lat, market.lng]
+            ], {
+                color: colors.RDC,
+                weight: weight,
+                opacity: 0.6
+            }).addTo(map);
+        });
+        
+        // Add markers
+        locations.forEach(function(location) {
+            var markerSize = location.type === 'Market' ? Math.max(8, location.volume / 200) : 
+                           location.type === 'RDC' ? 15 : 12;
+            
+            var popupContent = '<b>' + location.city + '</b><br>' +
+                              'Type: ' + location.type + '<br>' +
+                              'Volume: ' + location.volume.toLocaleString() + ' tonnes/month';
+            
+            if (location.type === 'Plant' || location.type === 'RDC') {
+                popupContent += '<br>Capacity: ' + (location.capacity ? location.capacity.toLocaleString() : 'N/A') + ' tonnes';
+            }
+            if (location.type === 'Market') {
+                popupContent += '<br>Priority: ' + location.priority;
+            }
+            
+            L.circleMarker([location.lat, location.lng], {
+                radius: markerSize,
+                fillColor: colors[location.type],
+                color: 'white',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.9
+            }).bindPopup(popupContent).addTo(map);
+        });
+    </script>
+</body>
+</html>
