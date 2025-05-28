@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NBC Professional Logistics Network</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #map { height: 100vh; width: 100%; }
+        .legend { position: fixed; bottom: 30px; left: 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.3); z-index: 1000; min-width: 250px; }
+        .legend h3 { margin: 0 0 15px 0; text-align: center; font-size: 18px; }
+        .legend-item { margin: 8px 0; display: flex; align-items: center; }
+        .legend-color { width: 16px; height: 16px; border-radius: 50%; margin-right: 10px; }
+        .info-panel { position: fixed; top: 20px; right: 20px; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); z-index: 1000; max-width: 300px; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="legend">
+        <h3>NBC Logistics Network</h3>
+        <div class="legend-item"><div class="legend-color" style="background: #ff4444;"></div><span>Central NDN Hub</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #4444ff;"></div><span>Regional Hubs</span></div>
+        <hr style="border-color: rgba(255,255,255,0.3); margin: 15px 0;">
+        <div class="legend-item"><div class="legend-color" style="background: #E74C3C;"></div><span>Ethnic Foods</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #3498DB;"></div><span>Beverage/Confectionery</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #F39C12;"></div><span>Export</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: #27AE60;"></div><span>General FMCG</span></div>
+    </div>
+    <div class="info-panel">
+        <h4 style="margin: 0 0 10px 0; color: #2C3E50;">Supply Chain Flow</h4>
+        <p style="margin: 5px 0; font-size: 14px;">📦 Suppliers → Central Hub</p>
+        <p style="margin: 5px 0; font-size: 14px;">🏢 Central → Regional Hubs</p>
+        <p style="margin: 5px 0; font-size: 14px;">🚚 Hubs → NBC Members</p>
+        <p style="margin: 10px 0 0 0; font-size: 12px; color: #7F8C8D;">Click markers for details</p>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([54.5, -2.5], 6);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 19
+        }).addTo(map);
+        // Add Central NDN Hub
+        L.circleMarker([52.2405, -0.8930], {
+            radius: 12, fillColor: '#ff4444', color: 'white', weight: 3, opacity: 1, fillOpacity: 0.9
+        }).addTo(map).bindPopup('<b>Central NDN Hub</b><br>Primary Distribution Center<br>Midlands, UK');
+        // Add Regional Hubs
+        L.circleMarker([55.8642, -4.2518], {
+            radius: 10, fillColor: '#4444ff', color: 'white', weight: 3, opacity: 1, fillOpacity: 0.9
+        }).addTo(map).bindPopup('<b>Scotland Regional Hub</b><br>Regional Distribution Center<br>Glasgow Area');
+        L.circleMarker([51.4545, -2.5879], {
+            radius: 10, fillColor: '#4444ff', color: 'white', weight: 3, opacity: 1, fillOpacity: 0.9
+        }).addTo(map).bindPopup('<b>South-West Regional Hub</b><br>Regional Distribution Center<br>Bristol Area');
+        // Category colors
+        var categoryColors = {
+            'Ethnic foods': '#E74C3C',
+            'Beverage/Confectionery': '#3498DB',
+            'Export': '#F39C12',
+            'General FMCG': '#27AE60'
+        };
+        // Member data
+        var members = [
+{lat: 51.55707141530112, lon: -0.1485396451756777, id: "NBC-001", region: "Greater London", category: "Export", volume: "Low", hub: "Central (NDN)"},
+{lat: 52.27006885381007, lon: 0.3502544784612038, id: "NBC-002", region: "East Anglia", category: "Ethnic foods", volume: "High", hub: "Central (NDN)"},
+{lat: 52.46278466252766, lon: -1.9255205435423772, id: "NBC-003", region: "Midlands", category: "General FMCG", volume: "Low", hub: "Central (NDN)"},
+{lat: 49.60112128155074, lon: -2.2484847906270637, id: "NBC-004", region: "Channel Islands", category: "General FMCG", volume: "Medium", hub: "South-West Regional"},
+{lat: 52.4392525614065, lon: -1.8090159934621053, id: "NBC-005", region: "Midlands", category: "General FMCG", volume: "Low", hub: "Central (NDN)"},
+{lat: 54.55095823071875, lon: -5.999959463035539, id: "NBC-006", region: "Northern Ireland", category: "Beverage/Confectionery", volume: "Low", hub: "Scotland Regional"},
+{lat: 55.9774962271566, lon: -3.4752920366986695, id: "NBC-007", region: "Scotland", category: "General FMCG", volume: "Medium", hub: "Scotland Regional"},
+{lat: 51.3091082167487, lon: -3.263443129386146, id: "NBC-008", region: "South Wales", category: "Export", volume: "Medium", hub: "South-West Regional"},
+{lat: 49.341916887966555, lon: -2.3164629001107087, id: "NBC-009", region: "Channel Islands", category: "Ethnic foods", volume: "Low", hub: "South-West Regional"},
+{lat: 51.363697592447885, lon: -2.7997455552002934, id: "NBC-010", region: "South West", category: "Export", volume: "High", hub: "South-West Regional"},
+{lat: 56.099864876892156, lon: -3.2221664450729803, id: "NBC-011", region: "Scotland", category: "Ethnic foods", volume: "Low", hub: "Scotland Regional"},
+{lat: 55.96005282046879, lon: -3.4020122279320186, id: "NBC-012", region: "Scotland", category: "Beverage/Confectionery", volume: "Medium", hub: "Scotland Regional"},
+{lat: 52.43176172754748, lon: -1.8737616115435203, id: "NBC-013", region: "Midlands", category: "Ethnic foods", volume: "High", hub: "Central (NDN)"},
+{lat: 51.392300642257766, lon: -0.07144529724814921, id: "NBC-014", region: "Greater London", category: "Export", volume: "Low", hub: "Central (NDN)"},
+{lat: 53.74073613100812, lon: -1.5928540624689915, id: "NBC-015", region: "Yorkshire", category: "Beverage/Confectionery", volume: "High", hub: "Central (NDN)"},
+{lat: 53.74062933877706, lon: -1.2712582723236592, id: "NBC-016", region: "Yorkshire", category: "General FMCG", volume: "High", hub: "Central (NDN)"},
+{lat: 53.47945027752621, lon: -2.401256639343385, id: "NBC-017", region: "North West", category: "Export", volume: "Medium", hub: "South-West Regional"},
+{lat: 53.88305449121032, lon: -1.7322265474956533, id: "NBC-018", region: "Yorkshire", category: "Ethnic foods", volume: "High", hub: "Central (NDN)"},
+{lat: 54.99918635950047, lon: -1.9113505185819664, id: "NBC-019", region: "North East", category: "Beverage/Confectionery", volume: "Low", hub: "South-West Regional"},
+{lat: 53.34798139511016, lon: -2.2130708146196314, id: "NBC-020", region: "North West", category: "General FMCG", volume: "High", hub: "Scotland Regional"},
+{lat: 53.55464665799954, lon: -2.216894757821504, id: "NBC-021", region: "North West", category: "Ethnic foods", volume: "Medium", hub: "Scotland Regional"},
+{lat: 52.47463517176117, lon: -1.9355655543383934, id: "NBC-022", region: "Midlands", category: "Beverage/Confectionery", volume: "Medium", hub: "Central (NDN)"},
+{lat: 54.449447800963256, lon: -6.038076631259207, id: "NBC-023", region: "Northern Ireland", category: "Beverage/Confectionery", volume: "Low", hub: "Central (NDN)"},
+{lat: 53.75473612290402, lon: -1.3905316660671625, id: "NBC-024", region: "Yorkshire", category: "Export", volume: "Medium", hub: "Central (NDN)"},
+{lat: 55.012661828956844, lon: -1.88185602330441, id: "NBC-025", region: "North East", category: "Export", volume: "High", hub: "Central (NDN)"},
+{lat: 51.486908396939484, lon: -2.6456623420624474, id: "NBC-026", region: "South West", category: "Ethnic foods", volume: "Medium", hub: "South-West Regional"},
+{lat: 49.3755077999694, lon: -2.2718485566738695, id: "NBC-027", region: "Channel Islands", category: "Beverage/Confectionery", volume: "Medium", hub: "South-West Regional"},
+{lat: 53.583899952249595, lon: -2.10290798213257, id: "NBC-028", region: "North West", category: "Export", volume: "High", hub: "South-West Regional"},
+{lat: 52.12137824767774, lon: 0.07541814362231783, id: "NBC-029", region: "East Anglia", category: "Export", volume: "High", hub: "Central (NDN)"},
+{lat: 53.51392634314036, lon: -2.096268230931646, id: "NBC-030", region: "North West", category: "Ethnic foods", volume: "High", hub: "South-West Regional"},
+{lat: 53.432882576215476, lon: -2.2704488464995727, id: "NBC-031", region: "North West", category: "Export", volume: "High", hub: "South-West Regional"},
+{lat: 54.48666650259939, lon: -6.109530993612101, id: "NBC-032", region: "Northern Ireland", category: "Beverage/Confectionery", volume: "High", hub: "South-West Regional"},
+{lat: 52.28655258223942, lon: 0.32523600428562344, id: "NBC-033", region: "East Anglia", category: "General FMCG", volume: "Medium", hub: "Central (NDN)"},
+{lat: 53.79359898784197, lon: -1.3985700653161963, id: "NBC-034", region: "Yorkshire", category: "Ethnic foods", volume: "Medium", hub: "Central (NDN)"},
+{lat: 55.01446360250476, lon: -1.7141679631907687, id: "NBC-035", region: "North East", category: "Export", volume: "Medium", hub: "South-West Regional"},
+{lat: 55.01443956055084, lon: -1.3866945150301047, id: "NBC-036", region: "North East", category: "Beverage/Confectionery", volume: "Medium", hub: "Central (NDN)"},
+{lat: 52.20171739608901, lon: 0.35649654837210093, id: "NBC-037", region: "East Anglia", category: "Export", volume: "High", hub: "Central (NDN)"},
+{lat: 51.943325489591025, lon: 0.24508537565628358, id: "NBC-038", region: "East Anglia", category: "Ethnic foods", volume: "High", hub: "Central (NDN)"},
+{lat: 51.49030470682382, lon: -3.22395110256988, id: "NBC-039", region: "South Wales", category: "Ethnic foods", volume: "Low", hub: "South-West Regional"},
+{lat: 55.96247607765355, lon: -3.4864353371901338, id: "NBC-040", region: "Scotland", category: "Export", volume: "Low", hub: "Scotland Regional"},
+{lat: 53.778832811216255, lon: -1.495533114273238, id: "NBC-041", region: "Yorkshire", category: "Ethnic foods", volume: "Medium", hub: "Central (NDN)"},
+{lat: 51.65518940447415, lon: -0.2055405327410471, id: "NBC-042", region: "Greater London", category: "Export", volume: "Medium", hub: "Central (NDN)"},
+{lat: 49.36235063971068, lon: -2.4388635565376804, id: "NBC-043", region: "Channel Islands", category: "General FMCG", volume: "High", hub: "South-West Regional"},
+{lat: 54.688840211770206, lon: -5.880787333551048, id: "NBC-044", region: "Northern Ireland", category: "Beverage/Confectionery", volume: "High", hub: "Scotland Regional"},
+{lat: 53.4278239796233, lon: -2.1656098850329966, id: "NBC-045", region: "North West", category: "Ethnic foods", volume: "Low", hub: "South-West Regional"},
+{lat: 54.9880077549348, lon: -1.4721032514200665, id: "NBC-046", region: "North East", category: "General FMCG", volume: "Low", hub: "Central (NDN)"},
+{lat: 55.88309469061226, lon: -3.237449321989665, id: "NBC-047", region: "Scotland", category: "General FMCG", volume: "Medium", hub: "Scotland Regional"},
+{lat: 49.40398918468678, lon: -2.5831272422198177, id: "NBC-048", region: "Channel Islands", category: "Ethnic foods", volume: "Low", hub: "South-West Regional"},
+{lat: 55.00791202770645, lon: -1.5782417091730165, id: "NBC-049", region: "North East", category: "Export", volume: "Medium", hub: "Scotland Regional"},
+{lat: 49.44371134566424, lon: -2.398788070006272, id: "NBC-050", region: "Channel Islands", category: "General FMCG", volume: "Medium", hub: "South-West Regional"},
+{lat: 53.65926292579496, lon: -1.6121967984148038, id: "NBC-051", region: "Yorkshire", category: "Ethnic foods", volume: "High", hub: "Central (NDN)"},
+{lat: 53.766528548347324, lon: -1.6694415903832427, id: "NBC-052", region: "Yorkshire", category: "Beverage/Confectionery", volume: "High", hub: "Central (NDN)"},
+{lat: 52.47007142883339, lon: -1.8297923714778193, id: "NBC-053", region: "Midlands", category: "Beverage/Confectionery", volume: "Medium", hub: "Central (NDN)"},
+{lat: 52.67481859012105, lon: -1.8642133280752242, id: "NBC-054", region: "Midlands", category: "Ethnic foods", volume: "Low", hub: "Central (NDN)"},
+{lat: 54.62305503907228, lon: -5.941266887364925, id: "NBC-055", region: "Northern Ireland", category: "Ethnic foods", volume: "Low", hub: "South-West Regional"},
+{lat: 51.2626228784701, lon: -2.5918770813173824, id: "NBC-056", region: "South West", category: "Ethnic foods", volume: "Medium", hub: "South-West Regional"},
+{lat: 54.6033230209941, lon: -5.560613683127207, id: "NBC-057", region: "Northern Ireland", category: "Export", volume: "High", hub: "South-West Regional"},
+{lat: 51.43526390352189, lon: -2.542667898649958, id: "NBC-058", region: "South West", category: "Beverage/Confectionery", volume: "Medium", hub: "South-West Regional"},
+{lat: 52.482728823029476, lon: -2.0657017056429297, id: "NBC-059", region: "Midlands", category: "Export", volume: "High", hub: "Central (NDN)"},
+{lat: 53.5950822814515, lon: -2.129810045096984, id: "NBC-060", region: "North West", category: "Ethnic foods", volume: "High", hub: "Scotland Regional"},
+{lat: 54.6764031947043, lon: -6.066508118219211, id: "NBC-061", region: "Northern Ireland", category: "Ethnic foods", volume: "High", hub: "Scotland Regional"},
+{lat: 53.94107943109361, lon: -1.759377659418842, id: "NBC-062", region: "Yorkshire", category: "General FMCG", volume: "Medium", hub: "Central (NDN)"},
+{lat: 54.655985709380026, lon: -5.601531656128504, id: "NBC-063", region: "Northern Ireland", category: "Beverage/Confectionery", volume: "Low", hub: "Scotland Regional"},
+{lat: 51.38254636748693, lon: -3.2640446594404158, id: "NBC-064", region: "South Wales", category: "General FMCG", volume: "Medium", hub: "South-West Regional"},
+{lat: 49.45316513650876, lon: -2.4391213481174296, id: "NBC-065", region: "Channel Islands", category: "Export", volume: "High", hub: "South-West Regional"},
+        ];
+        // Add members
+        members.forEach(function(member) {
+            L.circleMarker([member.lat, member.lon], {
+                radius: 6,
+                fillColor: categoryColors[member.category],
+                color: 'white',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.9
+            }).addTo(map)
+            .bindPopup('<b>' + member.id + '</b><br>' +
+                      'Region: ' + member.region + '<br>' +
+                      'Category: ' + member.category + '<br>' +
+                      'Volume: ' + member.volume + '<br>' +
+                      'Hub: ' + member.hub);
+        });
+        // Add ALL supply chain connections
+        var connections = [
+{from: [52.2405, -0.893], to: [51.55707141530112, -0.1485396451756777]},
+{from: [52.2405, -0.893], to: [52.27006885381007, 0.3502544784612038]},
+{from: [52.2405, -0.893], to: [52.46278466252766, -1.9255205435423772]},
+{from: [51.4545, -2.5879], to: [49.60112128155074, -2.2484847906270637]},
+{from: [52.2405, -0.893], to: [52.4392525614065, -1.8090159934621053]},
+{from: [55.8642, -4.2518], to: [54.55095823071875, -5.999959463035539]},
+{from: [55.8642, -4.2518], to: [55.9774962271566, -3.4752920366986695]},
+{from: [51.4545, -2.5879], to: [51.3091082167487, -3.263443129386146]},
+{from: [51.4545, -2.5879], to: [49.341916887966555, -2.3164629001107087]},
+{from: [51.4545, -2.5879], to: [51.363697592447885, -2.7997455552002934]},
+{from: [55.8642, -4.2518], to: [56.099864876892156, -3.2221664450729803]},
+{from: [55.8642, -4.2518], to: [55.96005282046879, -3.4020122279320186]},
+{from: [52.2405, -0.893], to: [52.43176172754748, -1.8737616115435203]},
+{from: [52.2405, -0.893], to: [51.392300642257766, -0.07144529724814921]},
+{from: [52.2405, -0.893], to: [53.74073613100812, -1.5928540624689915]},
+{from: [52.2405, -0.893], to: [53.74062933877706, -1.2712582723236592]},
+{from: [51.4545, -2.5879], to: [53.47945027752621, -2.401256639343385]},
+{from: [52.2405, -0.893], to: [53.88305449121032, -1.7322265474956533]},
+{from: [51.4545, -2.5879], to: [54.99918635950047, -1.9113505185819664]},
+{from: [55.8642, -4.2518], to: [53.34798139511016, -2.2130708146196314]},
+{from: [55.8642, -4.2518], to: [53.55464665799954, -2.216894757821504]},
+{from: [52.2405, -0.893], to: [52.47463517176117, -1.9355655543383934]},
+{from: [52.2405, -0.893], to: [54.449447800963256, -6.038076631259207]},
+{from: [52.2405, -0.893], to: [53.75473612290402, -1.3905316660671625]},
+{from: [52.2405, -0.893], to: [55.012661828956844, -1.88185602330441]},
+{from: [51.4545, -2.5879], to: [51.486908396939484, -2.6456623420624474]},
+{from: [51.4545, -2.5879], to: [49.3755077999694, -2.2718485566738695]},
+{from: [51.4545, -2.5879], to: [53.583899952249595, -2.10290798213257]},
+{from: [52.2405, -0.893], to: [52.12137824767774, 0.07541814362231783]},
+{from: [51.4545, -2.5879], to: [53.51392634314036, -2.096268230931646]},
+{from: [51.4545, -2.5879], to: [53.432882576215476, -2.2704488464995727]},
+{from: [51.4545, -2.5879], to: [54.48666650259939, -6.109530993612101]},
+{from: [52.2405, -0.893], to: [52.28655258223942, 0.32523600428562344]},
+{from: [52.2405, -0.893], to: [53.79359898784197, -1.3985700653161963]},
+{from: [51.4545, -2.5879], to: [55.01446360250476, -1.7141679631907687]},
+{from: [52.2405, -0.893], to: [55.01443956055084, -1.3866945150301047]},
+{from: [52.2405, -0.893], to: [52.20171739608901, 0.35649654837210093]},
+{from: [52.2405, -0.893], to: [51.943325489591025, 0.24508537565628358]},
+{from: [51.4545, -2.5879], to: [51.49030470682382, -3.22395110256988]},
+{from: [55.8642, -4.2518], to: [55.96247607765355, -3.4864353371901338]},
+{from: [52.2405, -0.893], to: [53.778832811216255, -1.495533114273238]},
+{from: [52.2405, -0.893], to: [51.65518940447415, -0.2055405327410471]},
+{from: [51.4545, -2.5879], to: [49.36235063971068, -2.4388635565376804]},
+{from: [55.8642, -4.2518], to: [54.688840211770206, -5.880787333551048]},
+{from: [51.4545, -2.5879], to: [53.4278239796233, -2.1656098850329966]},
+{from: [52.2405, -0.893], to: [54.9880077549348, -1.4721032514200665]},
+{from: [55.8642, -4.2518], to: [55.88309469061226, -3.237449321989665]},
+{from: [51.4545, -2.5879], to: [49.40398918468678, -2.5831272422198177]},
+{from: [55.8642, -4.2518], to: [55.00791202770645, -1.5782417091730165]},
+{from: [51.4545, -2.5879], to: [49.44371134566424, -2.398788070006272]},
+{from: [52.2405, -0.893], to: [53.65926292579496, -1.6121967984148038]},
+{from: [52.2405, -0.893], to: [53.766528548347324, -1.6694415903832427]},
+{from: [52.2405, -0.893], to: [52.47007142883339, -1.8297923714778193]},
+{from: [52.2405, -0.893], to: [52.67481859012105, -1.8642133280752242]},
+{from: [51.4545, -2.5879], to: [54.62305503907228, -5.941266887364925]},
+{from: [51.4545, -2.5879], to: [51.2626228784701, -2.5918770813173824]},
+{from: [51.4545, -2.5879], to: [54.6033230209941, -5.560613683127207]},
+{from: [51.4545, -2.5879], to: [51.43526390352189, -2.542667898649958]},
+{from: [52.2405, -0.893], to: [52.482728823029476, -2.0657017056429297]},
+{from: [55.8642, -4.2518], to: [53.5950822814515, -2.129810045096984]},
+{from: [55.8642, -4.2518], to: [54.6764031947043, -6.066508118219211]},
+{from: [52.2405, -0.893], to: [53.94107943109361, -1.759377659418842]},
+{from: [55.8642, -4.2518], to: [54.655985709380026, -5.601531656128504]},
+{from: [51.4545, -2.5879], to: [51.38254636748693, -3.2640446594404158]},
+{from: [51.4545, -2.5879], to: [49.45316513650876, -2.4391213481174296]},
+        ];
+        connections.forEach(function(conn) {
+            L.polyline([conn.from, conn.to], {
+                color: '#34495E',
+                weight: 2,
+                opacity: 0.25,
+                dashArray: '6, 4'
+            }).addTo(map);
+        });
+    </script>
+</body>
+</html>
