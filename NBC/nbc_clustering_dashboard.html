@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NBC Clustering Story: From Fragmented Loads to Full-Fleet Precision</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            background: white; 
+            border-radius: 15px; 
+            padding: 30px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 30px; 
+            background: linear-gradient(135deg, #2C3E50, #34495E);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        .header h1 { 
+            margin: 0; 
+            font-size: 28px; 
+            font-weight: bold;
+        }
+        .header p { 
+            margin: 10px 0 0 0; 
+            font-size: 16px; 
+            opacity: 0.9;
+        }
+        .comparison-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 30px; 
+            margin-bottom: 30px;
+        }
+        .model-card { 
+            padding: 25px; 
+            border-radius: 10px; 
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .traditional { 
+            background: linear-gradient(135deg, #E74C3C, #C0392B); 
+            color: white;
+        }
+        .clustered { 
+            background: linear-gradient(135deg, #27AE60, #229954); 
+            color: white;
+        }
+        .model-card h2 { 
+            margin: 0 0 20px 0; 
+            font-size: 22px;
+        }
+        .metric { 
+            margin: 15px 0; 
+            padding: 10px; 
+            background: rgba(255,255,255,0.1); 
+            border-radius: 5px;
+        }
+        .metric-label { 
+            font-size: 14px; 
+            opacity: 0.9; 
+            margin-bottom: 5px;
+        }
+        .metric-value { 
+            font-size: 24px; 
+            font-weight: bold;
+        }
+        .chart-container { 
+            margin: 20px 0; 
+            background: #f8f9fa; 
+            border-radius: 10px; 
+            padding: 20px;
+        }
+        .chart-title { 
+            font-size: 18px; 
+            font-weight: bold; 
+            margin-bottom: 15px; 
+            color: #2C3E50;
+        }
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .benefit-card {
+            background: linear-gradient(135deg, #3498DB, #2980B9);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .benefit-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        .benefit-card .value {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .benefit-card .description {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .summary-box {
+            background: linear-gradient(135deg, #8E44AD, #7D3C98);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        .summary-box h2 {
+            margin: 0 0 15px 0;
+            font-size: 22px;
+        }
+        .summary-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .summary-box li {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 NBC Clustering Story</h1>
+            <p>From Fragmented Loads to Full-Fleet Precision</p>
+        </div>
+        
+        <div class="comparison-grid">
+            <div class="model-card traditional">
+                <h2>❌ Traditional Model</h2>
+                <div class="metric">
+                    <div class="metric-label">Trucks Dispatched (90 days)</div>
+                    <div class="metric-value">520</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Average Fill Rate</div>
+                    <div class="metric-value">68.5%</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Cost per Pallet</div>
+                    <div class="metric-value">£47.80</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Empty Miles/Week</div>
+                    <div class="metric-value">410</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Planning Efficiency</div>
+                    <div class="metric-value">Manual</div>
+                </div>
+            </div>
+            
+            <div class="model-card clustered">
+                <h2>✅ Clustered Model</h2>
+                <div class="metric">
+                    <div class="metric-label">Trucks Dispatched (90 days)</div>
+                    <div class="metric-value">353</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Average Fill Rate</div>
+                    <div class="metric-value">91.2%</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Cost per Pallet</div>
+                    <div class="metric-value">£33.90</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Empty Miles/Week</div>
+                    <div class="metric-value">128</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-label">Planning Efficiency</div>
+                    <div class="metric-value">58% Faster</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="benefits-grid">
+            <div class="benefit-card">
+                <h3>Truck Reduction</h3>
+                <div class="value">32%</div>
+                <div class="description">Fewer trucks needed through smart clustering</div>
+            </div>
+            <div class="benefit-card">
+                <h3>Fill Rate Improvement</h3>
+                <div class="value">+33%</div>
+                <div class="description">From 68.5% to 91.2% capacity utilization</div>
+            </div>
+            <div class="benefit-card">
+                <h3>Cost Reduction</h3>
+                <div class="value">29%</div>
+                <div class="description">£13.90 savings per pallet shipped</div>
+            </div>
+            <div class="benefit-card">
+                <h3>Empty Miles Cut</h3>
+                <div class="value">69%</div>
+                <div class="description">Massive reduction in wasted mileage</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-title">Performance Comparison: Traditional vs Clustered Model</div>
+            <div id="comparison-chart"></div>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-title">Regional Clustering Efficiency</div>
+            <div id="regional-chart"></div>
+        </div>
+        
+        <div class="summary-box">
+            <h2>🚀 The Julius AI Advantage</h2>
+            <ul>
+                <li><strong>Smart Regional Clustering:</strong> Orders grouped by proximity and timing</li>
+                <li><strong>Dynamic Load Optimization:</strong> Maximum fill rates without compromising delivery windows</li>
+                <li><strong>Automated Planning:</strong> 58% reduction in manual planning time</li>
+                <li><strong>Environmental Impact:</strong> 69% fewer empty miles = lower carbon footprint</li>
+                <li><strong>Cost Efficiency:</strong> £13.90 savings per pallet across the network</li>
+                <li><strong>Scalable Solution:</strong> Works across all 65 NBC members and 3 hubs</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Performance Comparison Chart
+        var comparisonData = [
+            {
+                x: ['Trucks Dispatched', 'Fill Rate (%)', 'Cost per Pallet (£)', 'Empty Miles/Week'],
+                y: [520, 68.5, 47.80, 410],
+                name: 'Traditional Model',
+                type: 'bar',
+                marker: { color: '#E74C3C' }
+            },
+            {
+                x: ['Trucks Dispatched', 'Fill Rate (%)', 'Cost per Pallet (£)', 'Empty Miles/Week'],
+                y: [353, 91.2, 33.90, 128],
+                name: 'Clustered Model',
+                type: 'bar',
+                marker: { color: '#27AE60' }
+            }
+        ];
+        
+        var comparisonLayout = {
+            barmode: 'group',
+            height: 400,
+            margin: { t: 20, b: 60, l: 60, r: 20 },
+            font: { family: 'Segoe UI' },
+            yaxis: { title: 'Value' }
+        };
+        
+        Plotly.newPlot('comparison-chart', comparisonData, comparisonLayout);
+        
+        // Regional Clustering Chart
+        var regions = ['London', 'Manchester', 'Birmingham', 'Glasgow', 'Bristol', 'Belfast', 'Cardiff', 'Leeds'];
+        var traditionalTrucks = [45, 38, 42, 35, 40, 28, 32, 36];
+        var clusteredTrucks = [28, 24, 26, 22, 25, 18, 20, 23];
+        
+        var regionalData = [
+            {
+                x: regions,
+                y: traditionalTrucks,
+                name: 'Traditional',
+                type: 'bar',
+                marker: { color: '#E74C3C' }
+            },
+            {
+                x: regions,
+                y: clusteredTrucks,
+                name: 'Clustered',
+                type: 'bar',
+                marker: { color: '#27AE60' }
+            }
+        ];
+        
+        var regionalLayout = {
+            barmode: 'group',
+            height: 400,
+            margin: { t: 20, b: 60, l: 60, r: 20 },
+            font: { family: 'Segoe UI' },
+            yaxis: { title: 'Trucks per Month' },
+            xaxis: { title: 'Region' }
+        };
+        
+        Plotly.newPlot('regional-chart', regionalData, regionalLayout);
+    </script>
+</body>
+</html>
