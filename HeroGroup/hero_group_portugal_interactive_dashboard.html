@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero Group Portugal Demand Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .chart-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .controls {
+            background: #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        select, button {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚚 Hero Group Portugal Demand Dashboard</h1>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalDemand">-</div>
+                <div class="stat-label">Total Weekly Cases</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalCities">8</div>
+                <div class="stat-label">Cities Served</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalProducts">4</div>
+                <div class="stat-label">Product Lines</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgDemand">-</div>
+                <div class="stat-label">Avg Cases/City</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <label>Filter by Product:</label>
+            <select id="productFilter">
+                <option value="all">All Products</option>
+                <option value="Hero Baby">Hero Baby</option>
+                <option value="Organix Snacks">Organix Snacks</option>
+                <option value="Deliciously Ella Bars">Deliciously Ella Bars</option>
+                <option value="Hero Jams">Hero Jams</option>
+            </select>
+            <button onclick="updateCharts()">Update View</button>
+            <button onclick="resetView()">Reset</button>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="chart-container">
+                <div id="mapChart" style="height: 500px;"></div>
+            </div>
+            <div class="chart-container">
+                <div id="productChart" style="height: 500px;"></div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div id="cityChart" style="height: 400px;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Data from Python
+        const cityData = [{"City":"Aveiro","Latitude":40.6405,"Longitude":-8.6538,"Weekly_Demand_Cases":1593},{"City":"Braga","Latitude":41.5454,"Longitude":-8.4265,"Weekly_Demand_Cases":4118},{"City":"Coimbra","Latitude":40.2033,"Longitude":-8.4103,"Weekly_Demand_Cases":2583},{"City":"Faro","Latitude":37.0194,"Longitude":-7.9304,"Weekly_Demand_Cases":1427},{"City":"Lisbon","Latitude":38.7223,"Longitude":-9.1393,"Weekly_Demand_Cases":64060},{"City":"Porto","Latitude":41.1579,"Longitude":-8.6291,"Weekly_Demand_Cases":29828},{"City":"Setubal","Latitude":38.5244,"Longitude":-8.8882,"Weekly_Demand_Cases":2471},{"City":"Viseu","Latitude":40.661,"Longitude":-7.9097,"Weekly_Demand_Cases":2468}];
+        const productData = [{"Product":"Deliciously Ella Bars","Weekly_Demand_Cases":28398},{"Product":"Hero Baby","Weekly_Demand_Cases":32292},{"Product":"Hero Jams","Weekly_Demand_Cases":26275},{"Product":"Organix Snacks","Weekly_Demand_Cases":21583}];
+        const fullData = [{"City":"Lisbon","Latitude":38.7223,"Longitude":-9.1393,"Product":"Hero Baby","Weekly_Demand_Cases":21457},{"City":"Lisbon","Latitude":38.7223,"Longitude":-9.1393,"Product":"Organix Snacks","Weekly_Demand_Cases":10578},{"City":"Lisbon","Latitude":38.7223,"Longitude":-9.1393,"Product":"Deliciously Ella Bars","Weekly_Demand_Cases":16723},{"City":"Lisbon","Latitude":38.7223,"Longitude":-9.1393,"Product":"Hero Jams","Weekly_Demand_Cases":15302},{"City":"Porto","Latitude":41.1579,"Longitude":-8.6291,"Product":"Hero Baby","Weekly_Demand_Cases":7329},{"City":"Porto","Latitude":41.1579,"Longitude":-8.6291,"Product":"Organix Snacks","Weekly_Demand_Cases":7390},{"City":"Porto","Latitude":41.1579,"Longitude":-8.6291,"Product":"Deliciously Ella Bars","Weekly_Demand_Cases":8540},{"City":"Porto","Latitude":41.1579,"Longitude":-8.6291,"Product":"Hero Jams","Weekly_Demand_Cases":6569},{"City":"Braga","Latitude":41.5454,"Longitude":-8.4265,"Product":"Hero Baby","Weekly_Demand_Cases":952},{"City":"Braga","Latitude":41.5454,"Longitude":-8.4265,"Product":"Organix Snacks","Weekly_Demand_Cases":790},{"City":"Braga","Latitude":41.5454,"Longitude":-8.4265,"Product":"Deliciously Ella Bars","Weekly_Demand_Cases":631},{"City":"Braga","Latitude":41.5454,"Longitude":-8.4265,"Product":"Hero Jams","Weekly_Demand_Cases":1745},{"City":"Coimbra","Latitude":40.2033,"Longitude":-8.4103,"Product":"Hero Baby","Weekly_Demand_Cases":592},{"City":"Coimbra","Latitude":40.2033,"Longitude":-8.4103,"Product":"Organix Snacks","Weekly_Demand_Cases":579},{"City":"Coimbra","Latitude":40.2033,"Longitude":-8.4103,"Product":"Deliciously Ella Bars","Weekly_Demand_Cases":677},{"City":"Coimbra","Latitude":40.2033,"Longitude":-8.4103,"Product":"Hero Jams","Weekly_Demand_Cases":735},{"City":"Faro","Latitude":37.0194,"Longitude":-7.9304,"Product":"Hero Baby","Weekly_Demand_Cases":342},{"City":"Faro","Latitude":37.0194,"Longitude":-7.9304,"Product":"Organix Snacks","Weekly_Demand_Cases":562},{"City":"Faro","Latitude":37.0194,"Longitude":-7.9304,"Product":"Deliciously Ella Bars","Weekly_Demand_Cases":333},{"City":"Faro","Latitude":37.0194,"Longitude":-7.9304,"Product":"Hero Jams","Weekly_Demand_Cases":190},{"City":"Setubal","Latitude":38.5244,"Longitude":-8.8882,"Product":"Hero Baby","Weekly_Demand_Cases":641},{"City":"Setubal","Latitude":38.5244,"Longitude":-8.8882,"Product":"Organix Snacks","Weekly_Demand_Cases":552},{"City":"Setubal","Latitude":38.5244,"Longitude":-8.8882,"Product":"Deliciously Ella Bars","Weekly_Demand_Cases":512},{"City":"Setubal","Latitude":38.5244,"Longitude":-8.8882,"Product":"Hero Jams","Weekly_Demand_Cases":766},{"City":"Aveiro","Latitude":40.6405,"Longitude":-8.6538,"Product":"Hero Baby","Weekly_Demand_Cases":467},{"City":"Aveiro","Latitude":40.6405,"Longitude":-8.6538,"Product":"Organix Snacks","Weekly_Demand_Cases":428},{"City":"Aveiro","Latitude":40.6405,"Longitude":-8.6538,"Product":"Deliciously Ella Bars","Weekly_Demand_Cases":382},{"City":"Aveiro","Latitude":40.6405,"Longitude":-8.6538,"Product":"Hero Jams","Weekly_Demand_Cases":316},{"City":"Viseu","Latitude":40.661,"Longitude":-7.9097,"Product":"Hero Baby","Weekly_Demand_Cases":512},{"City":"Viseu","Latitude":40.661,"Longitude":-7.9097,"Product":"Organix Snacks","Weekly_Demand_Cases":704},{"City":"Viseu","Latitude":40.661,"Longitude":-7.9097,"Product":"Deliciously Ella Bars","Weekly_Demand_Cases":600},{"City":"Viseu","Latitude":40.661,"Longitude":-7.9097,"Product":"Hero Jams","Weekly_Demand_Cases":652}];
+        
+        // Initialize dashboard
+        function initDashboard() {
+            updateStats();
+            createMapChart();
+            createProductChart();
+            createCityChart();
+        }
+        
+        function updateStats() {
+            const totalDemand = cityData.reduce((sum, city) => sum + city.Weekly_Demand_Cases, 0);
+            const avgDemand = Math.round(totalDemand / cityData.length);
+            
+            document.getElementById('totalDemand').textContent = totalDemand.toLocaleString();
+            document.getElementById('avgDemand').textContent = avgDemand.toLocaleString();
+        }
+        
+        function createMapChart() {
+            const mapData = [{
+                type: 'scattermapbox',
+                lat: cityData.map(d => d.Latitude),
+                lon: cityData.map(d => d.Longitude),
+                mode: 'markers',
+                marker: {
+                    size: cityData.map(d => Math.max(d.Weekly_Demand_Cases / 1000, 10)),
+                    color: cityData.map(d => d.Weekly_Demand_Cases),
+                    colorscale: 'Blues',
+                    showscale: true,
+                    colorbar: {title: 'Weekly Cases'}
+                },
+                text: cityData.map(d => `${d.City}<br>${d.Weekly_Demand_Cases.toLocaleString()} cases`),
+                hovertemplate: '%{text}<extra></extra>'
+            }];
+            
+            // Add Lisbon RDC marker
+            const lisbonData = cityData.find(d => d.City === 'Lisbon');
+            mapData.push({
+                type: 'scattermapbox',
+                lat: [lisbonData.Latitude],
+                lon: [lisbonData.Longitude],
+                mode: 'markers',
+                marker: {
+                    size: 25,
+                    color: 'red',
+                    symbol: 'star'
+                },
+                text: ['Lisbon RDC'],
+                name: 'RDC',
+                hovertemplate: 'Lisbon RDC<extra></extra>'
+            });
+            
+            const layout = {
+                mapbox: {
+                    style: 'carto-positron',
+                    center: {lat: 39.5, lon: -8.0},
+                    zoom: 5.5
+                },
+                title: 'Weekly Demand Distribution Across Portugal',
+                margin: {l: 0, r: 0, t: 40, b: 0},
+                showlegend: false
+            };
+            
+            Plotly.newPlot('mapChart', mapData, layout);
+        }
+        
+        function createProductChart() {
+            const data = [{
+                x: productData.map(d => d.Product),
+                y: productData.map(d => d.Weekly_Demand_Cases),
+                type: 'bar',
+                marker: {
+                    color: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4']
+                }
+            }];
+            
+            const layout = {
+                title: 'Weekly Demand by Product Line',
+                xaxis: {title: 'Product'},
+                yaxis: {title: 'Cases'},
+                margin: {l: 60, r: 20, t: 40, b: 80}
+            };
+            
+            Plotly.newPlot('productChart', data, layout);
+        }
+        
+        function createCityChart() {
+            const sortedCities = [...cityData].sort((a, b) => b.Weekly_Demand_Cases - a.Weekly_Demand_Cases);
+            
+            const data = [{
+                x: sortedCities.map(d => d.City),
+                y: sortedCities.map(d => d.Weekly_Demand_Cases),
+                type: 'bar',
+                marker: {
+                    color: '#667eea'
+                }
+            }];
+            
+            const layout = {
+                title: 'Weekly Demand by City (Ranked)',
+                xaxis: {title: 'City'},
+                yaxis: {title: 'Cases'},
+                margin: {l: 60, r: 20, t: 40, b: 60}
+            };
+            
+            Plotly.newPlot('cityChart', data, layout);
+        }
+        
+        function updateCharts() {
+            const selectedProduct = document.getElementById('productFilter').value;
+            
+            if (selectedProduct === 'all') {
+                createMapChart();
+                createProductChart();
+                createCityChart();
+            } else {
+                // Filter data for selected product
+                const filteredData = fullData.filter(d => d.Product === selectedProduct);
+                const filteredCityData = [];
+                
+                // Aggregate by city for filtered product
+                const cityMap = {};
+                filteredData.forEach(d => {
+                    if (!cityMap[d.City]) {
+                        cityMap[d.City] = {
+                            City: d.City,
+                            Latitude: d.Latitude,
+                            Longitude: d.Longitude,
+                            Weekly_Demand_Cases: 0
+                        };
+                    }
+                    cityMap[d.City].Weekly_Demand_Cases += d.Weekly_Demand_Cases;
+                });
+                
+                Object.values(cityMap).forEach(city => filteredCityData.push(city));
+                
+                // Update map with filtered data
+                const mapData = [{
+                    type: 'scattermapbox',
+                    lat: filteredCityData.map(d => d.Latitude),
+                    lon: filteredCityData.map(d => d.Longitude),
+                    mode: 'markers',
+                    marker: {
+                        size: filteredCityData.map(d => Math.max(d.Weekly_Demand_Cases / 500, 10)),
+                        color: filteredCityData.map(d => d.Weekly_Demand_Cases),
+                        colorscale: 'Blues',
+                        showscale: true
+                    },
+                    text: filteredCityData.map(d => `${d.City}<br>${d.Weekly_Demand_Cases.toLocaleString()} cases<br>${selectedProduct}`),
+                    hovertemplate: '%{text}<extra></extra>'
+                }];
+                
+                const layout = {
+                    mapbox: {
+                        style: 'carto-positron',
+                        center: {lat: 39.5, lon: -8.0},
+                        zoom: 5.5
+                    },
+                    title: `Weekly Demand for ${selectedProduct}`,
+                    margin: {l: 0, r: 0, t: 40, b: 0},
+                    showlegend: false
+                };
+                
+                Plotly.newPlot('mapChart', mapData, layout);
+            }
+        }
+        
+        function resetView() {
+            document.getElementById('productFilter').value = 'all';
+            updateCharts();
+        }
+        
+        // Initialize on page load
+        window.onload = initDashboard;
+    </script>
+</body>
+</html>
