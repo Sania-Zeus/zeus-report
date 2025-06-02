@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groupe Deret European Supply Chain</title>
+    <style>
+        body { font-family: 'Lato', 'IBM Plex Sans', Arial, sans-serif; background: #f8f9fa; color: #222; margin: 0; }
+        .header { background: linear-gradient(135deg, #766CDB, #DA847C); color: white; padding: 24px 0 18px 0; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.07); }
+        .header h1 { font-size: 2.3em; font-weight: 600; margin-bottom: 6px; letter-spacing: 0.5px; margin: 0; }
+        .header p { font-size: 1.1em; opacity: 0.92; font-weight: 400; margin: 6px 0 0 0; }
+        .dashboard-container { display: grid; grid-template-columns: 1fr 400px; gap: 24px; padding: 24px; max-width: 1600px; margin: 0 auto; }
+        .map-container { background: white; border-radius: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.09); overflow: hidden; height: 720px; border: 6px solid #766CDB; transition: border-color 0.4s; }
+        .map-container.scenario-cost { border-color: #27ae60; }
+        .map-container.scenario-fleet { border-color: #2980b9; }
+        .map-container.scenario-expansion { border-color: #e67e22; }
+        .map-container.scenario-consolidation { border-color: #8e44ad; }
+        .map-container iframe { width: 100%; height: 100%; border: none; }
+        .sidebar { display: flex; flex-direction: column; gap: 22px; }
+        .panel { background: white; border-radius: 14px; padding: 22px 20px 18px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.09); }
+        .panel h3 { color: #766CDB; margin-bottom: 13px; font-size: 1.18em; border-bottom: 2px solid #f0f0f0; padding-bottom: 7px; font-weight: 600; margin-top: 0; }
+        .metric { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #f5f5f5; }
+        .metric:last-child { border-bottom: none; }
+        .metric-label { font-weight: 500; color: #555; }
+        .metric-value { font-weight: 600; color: #766CDB; }
+        .vertical-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .vertical-card { background: #f8f9fa; padding: 12px; border-radius: 8px; border-left: 4px solid #DA847C; }
+        .vertical-card h4 { color: #333; font-size: 0.93em; margin-bottom: 5px; margin-top: 0; }
+        .vertical-card p { color: #666; font-size: 0.82em; margin: 0; }
+        .legend { display: flex; flex-direction: column; gap: 8px; }
+        .legend-item { display: flex; align-items: center; gap: 10px; }
+        .legend-color { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #333; }
+        .flagship { background-color: #766CDB; }
+        .major-hub { background-color: #DA847C; }
+        .europe-hub { background-color: #7CD9A5; }
+        .scenario-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 13px; }
+        .scenario-btn { background: linear-gradient(135deg, #766CDB, #DA847C); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 0.93em; font-weight: 500; transition: all 0.3s; box-shadow: 0 2px 8px rgba(118,108,219,0.08); }
+        .scenario-btn.active { background: #fff; color: #766CDB; font-weight: 700; box-shadow: 0 0 0 3px #766CDB; }
+        .scenario-btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 4px 16px rgba(218,132,124,0.13); }
+        .scenario-panel { margin-top: 18px; background: #f8f9fa; border-radius: 10px; padding: 14px 16px; border-left: 5px solid #766CDB; min-height: 90px; transition: all 0.4s; }
+        .scenario-panel.scenario-cost { border-color: #27ae60; }
+        .scenario-panel.scenario-fleet { border-color: #2980b9; }
+        .scenario-panel.scenario-expansion { border-color: #e67e22; }
+        .scenario-panel.scenario-consolidation { border-color: #8e44ad; }
+        .scenario-summary { font-size: 0.9em; color: #555; line-height: 1.4; margin-top: 8px; }
+        @media (max-width: 1200px) { .dashboard-container { grid-template-columns: 1fr; grid-template-rows: auto auto; } .sidebar { grid-template-columns: 1fr 1fr; display: grid; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Groupe Deret European Supply Chain</h1>
+        <p>European logistics network, fleet, and scenario metrics</p>
+    </div>
+    <div class="dashboard-container">
+        <div class="map-container" id="mapContainer">
+            <iframe id="mapFrame" srcdoc="<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv=&quot;content-type&quot; content=&quot;text/html; charset=UTF-8&quot; />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js&quot;></script>
+    <script src=&quot;https://code.jquery.com/jquery-1.12.4.min.js&quot;></script>
+    <script src=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js&quot;></script>
+    <script src=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js&quot;></script>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css&quot;/>
+    <link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css&quot;/>
+    
+            <meta name=&quot;viewport&quot; content=&quot;width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no&quot; />
+            <style>
+                #map_9f817596b00224c066f7311ba25d79c3 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+</head>
+<body>
+    
+    
+            <div class=&quot;folium-map&quot; id=&quot;map_9f817596b00224c066f7311ba25d79c3&quot; ></div>
+        
+</body>
+<script>
+    
+    
+            var map_9f817596b00224c066f7311ba25d79c3 = L.map(
+                &quot;map_9f817596b00224c066f7311ba25d79c3&quot;,
+                {
+                    center: [46.6034, 1.8883],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 5,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_eba0e055deee01f8f751f662947be395 = L.tileLayer(
+                &quot;https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png&quot;,
+                {&quot;attribution&quot;: &quot;\u0026copy; \u003ca href=\&quot;http://www.openstreetmap.org/copyright\&quot;\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\&quot;http://cartodb.com/attributions\&quot;\u003eCartoDB\u003c/a\u003e, CartoDB \u003ca href =\&quot;http://cartodb.com/attributions\&quot;\u003eattributions\u003c/a\u003e&quot;, &quot;detectRetina&quot;: false, &quot;maxNativeZoom&quot;: 18, &quot;maxZoom&quot;: 18, &quot;minZoom&quot;: 0, &quot;noWrap&quot;: false, &quot;opacity&quot;: 1, &quot;subdomains&quot;: &quot;abc&quot;, &quot;tms&quot;: false}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var circle_marker_6b211f2965ab1fdbb9ee9f2b28cd9d4a = L.circleMarker(
+                [48.8566, 2.3522],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 16, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_d00570e0f466d44d3b4ef27404c2a129 = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_ad306187267f4d0bc3d7a8a82b0394e2 = $(`<div id=&quot;html_ad306187267f4d0bc3d7a8a82b0394e2&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 220px;&quot;>         <h4 style=&quot;color: #DA847C; margin-bottom: 8px;&quot;>Paris - Major Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Multi-vertical operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Full WMS/TMS integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Regional distribution center</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 15-25 vehicles</p>         </div>         </div>`)[0];
+            popup_d00570e0f466d44d3b4ef27404c2a129.setContent(html_ad306187267f4d0bc3d7a8a82b0394e2);
+        
+
+        circle_marker_6b211f2965ab1fdbb9ee9f2b28cd9d4a.bindPopup(popup_d00570e0f466d44d3b4ef27404c2a129)
+        ;
+
+        
+    
+    
+            var circle_marker_4acd240f9cb2429b0eeb4352e4802f20 = L.circleMarker(
+                [45.764, 4.8357],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 16, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_40d574c8df6a157a3a749079c6f20e29 = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_dda90d85ee2f435b08d6d9eef329d70b = $(`<div id=&quot;html_dda90d85ee2f435b08d6d9eef329d70b&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 220px;&quot;>         <h4 style=&quot;color: #DA847C; margin-bottom: 8px;&quot;>Lyon - Major Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Multi-vertical operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Full WMS/TMS integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Regional distribution center</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 15-25 vehicles</p>         </div>         </div>`)[0];
+            popup_40d574c8df6a157a3a749079c6f20e29.setContent(html_dda90d85ee2f435b08d6d9eef329d70b);
+        
+
+        circle_marker_4acd240f9cb2429b0eeb4352e4802f20.bindPopup(popup_40d574c8df6a157a3a749079c6f20e29)
+        ;
+
+        
+    
+    
+            var circle_marker_f51b5bc498ec72adb8c165640f0aee92 = L.circleMarker(
+                [43.2965, 5.3698],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 13, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_7bee8021d3a9bcc14a9bf68c4cc0017b = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_4ced6de93643087d8b1aca44e2f604a5 = $(`<div id=&quot;html_4ced6de93643087d8b1aca44e2f604a5&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 220px;&quot;>         <h4 style=&quot;color: #DA847C; margin-bottom: 8px;&quot;>Marseille - Major Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Multi-vertical operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Full WMS/TMS integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Regional distribution center</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 15-25 vehicles</p>         </div>         </div>`)[0];
+            popup_7bee8021d3a9bcc14a9bf68c4cc0017b.setContent(html_4ced6de93643087d8b1aca44e2f604a5);
+        
+
+        circle_marker_f51b5bc498ec72adb8c165640f0aee92.bindPopup(popup_7bee8021d3a9bcc14a9bf68c4cc0017b)
+        ;
+
+        
+    
+    
+            var circle_marker_184e4ac2523f294f1f2519ac5c3cb681 = L.circleMarker(
+                [50.6292, 3.0573],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 13, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_84fb2be23d29bdd1063976570f18fe5b = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_559c9faf6b11342b09f38222ef0ea25c = $(`<div id=&quot;html_559c9faf6b11342b09f38222ef0ea25c&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 220px;&quot;>         <h4 style=&quot;color: #DA847C; margin-bottom: 8px;&quot;>Lille - Major Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Multi-vertical operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Full WMS/TMS integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Regional distribution center</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 15-25 vehicles</p>         </div>         </div>`)[0];
+            popup_84fb2be23d29bdd1063976570f18fe5b.setContent(html_559c9faf6b11342b09f38222ef0ea25c);
+        
+
+        circle_marker_184e4ac2523f294f1f2519ac5c3cb681.bindPopup(popup_84fb2be23d29bdd1063976570f18fe5b)
+        ;
+
+        
+    
+    
+            var circle_marker_052a8963b586616fc92ae3718a2aca1b = L.circleMarker(
+                [44.8378, -0.5792],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 13, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_0fa1cabf4bae33611018822720ab2695 = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_8b50356b72691d2bbe9488c9eb7900b6 = $(`<div id=&quot;html_8b50356b72691d2bbe9488c9eb7900b6&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 220px;&quot;>         <h4 style=&quot;color: #DA847C; margin-bottom: 8px;&quot;>Bordeaux - Major Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Multi-vertical operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Full WMS/TMS integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Regional distribution center</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 15-25 vehicles</p>         </div>         </div>`)[0];
+            popup_0fa1cabf4bae33611018822720ab2695.setContent(html_8b50356b72691d2bbe9488c9eb7900b6);
+        
+
+        circle_marker_052a8963b586616fc92ae3718a2aca1b.bindPopup(popup_0fa1cabf4bae33611018822720ab2695)
+        ;
+
+        
+    
+    
+            var circle_marker_eee921e54c5412a22da503a439235d1e = L.circleMarker(
+                [48.5734, 7.7521],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 13, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_d858d32525a253a4ca6cd8f749006217 = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_35c05632473b51a1ceb2dbab273932b9 = $(`<div id=&quot;html_35c05632473b51a1ceb2dbab273932b9&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 220px;&quot;>         <h4 style=&quot;color: #DA847C; margin-bottom: 8px;&quot;>Strasbourg - Major Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Multi-vertical operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Full WMS/TMS integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Regional distribution center</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 15-25 vehicles</p>         </div>         </div>`)[0];
+            popup_d858d32525a253a4ca6cd8f749006217.setContent(html_35c05632473b51a1ceb2dbab273932b9);
+        
+
+        circle_marker_eee921e54c5412a22da503a439235d1e.bindPopup(popup_d858d32525a253a4ca6cd8f749006217)
+        ;
+
+        
+    
+    
+            var circle_marker_8a9cea846e7d4e29f1a5d82649666363 = L.circleMarker(
+                [47.25, 0.6833],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 22, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_6effca3dcf0d196ed03dc808ab4d672d = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_73f2b1b2a7ca6345a0c698851a857bd0 = $(`<div id=&quot;html_73f2b1b2a7ca6345a0c698851a857bd0&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 250px;&quot;>         <h4 style=&quot;color: #766CDB; margin-bottom: 8px;&quot;>Sorigny - Flagship Facility</h4>         <p style=&quot;margin: 4px 0;&quot;><strong>Floor Space:</strong> 17,000 m²</p>         <p style=&quot;margin: 4px 0;&quot;><strong>Total Operational:</strong> 40,000 m²</p>         <p style=&quot;margin: 4px 0;&quot;><strong>Certification:</strong> BREEAM Excellent</p>         <p style=&quot;margin: 4px 0;&quot;><strong>Specialization:</strong> Fashion/Luxury</p>         <p style=&quot;margin: 4px 0;&quot;><strong>Features:</strong> High automation & piece-picking</p>         </div>         </div>`)[0];
+            popup_6effca3dcf0d196ed03dc808ab4d672d.setContent(html_73f2b1b2a7ca6345a0c698851a857bd0);
+        
+
+        circle_marker_8a9cea846e7d4e29f1a5d82649666363.bindPopup(popup_6effca3dcf0d196ed03dc808ab4d672d)
+        ;
+
+        
+    
+    
+            var circle_marker_76aa7a157f53a63a8b3f0d2cd29113ff = L.circleMarker(
+                [40.4168, -3.7038],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 13, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_5e725af2564427902944d012415b6c6c = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_1ad8b35efcb74e396d2b3d0a83ded0f3 = $(`<div id=&quot;html_1ad8b35efcb74e396d2b3d0a83ded0f3&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 200px;&quot;>         <h4 style=&quot;color: #7CD9A5; margin-bottom: 8px;&quot;>Madrid - Europe Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Cross-border operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Local market penetration</p>         <p style=&quot;margin: 4px 0;&quot;>• Smile Pickup integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 5-15 vehicles</p>         </div>         </div>`)[0];
+            popup_5e725af2564427902944d012415b6c6c.setContent(html_1ad8b35efcb74e396d2b3d0a83ded0f3);
+        
+
+        circle_marker_76aa7a157f53a63a8b3f0d2cd29113ff.bindPopup(popup_5e725af2564427902944d012415b6c6c)
+        ;
+
+        
+    
+    
+            var circle_marker_7c5e2e0735d6dd93dc4fccc0cb59dc86 = L.circleMarker(
+                [41.3851, 2.1734],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_9aa6d07e994a7b4ac0a228e6d867579a = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_45194eef080b853c46be2a93bd8354c0 = $(`<div id=&quot;html_45194eef080b853c46be2a93bd8354c0&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 200px;&quot;>         <h4 style=&quot;color: #7CD9A5; margin-bottom: 8px;&quot;>Barcelona - Europe Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Cross-border operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Local market penetration</p>         <p style=&quot;margin: 4px 0;&quot;>• Smile Pickup integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 5-15 vehicles</p>         </div>         </div>`)[0];
+            popup_9aa6d07e994a7b4ac0a228e6d867579a.setContent(html_45194eef080b853c46be2a93bd8354c0);
+        
+
+        circle_marker_7c5e2e0735d6dd93dc4fccc0cb59dc86.bindPopup(popup_9aa6d07e994a7b4ac0a228e6d867579a)
+        ;
+
+        
+    
+    
+            var circle_marker_f02798634dffcc56d628fe6903cd1337 = L.circleMarker(
+                [50.8503, 4.3517],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 13, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_24cf45a821a06cdb90043f54385ec7a5 = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_625f0b7feeec6360006dba22501bcbeb = $(`<div id=&quot;html_625f0b7feeec6360006dba22501bcbeb&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 200px;&quot;>         <h4 style=&quot;color: #7CD9A5; margin-bottom: 8px;&quot;>Brussels - Europe Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Cross-border operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Local market penetration</p>         <p style=&quot;margin: 4px 0;&quot;>• Smile Pickup integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 5-15 vehicles</p>         </div>         </div>`)[0];
+            popup_24cf45a821a06cdb90043f54385ec7a5.setContent(html_625f0b7feeec6360006dba22501bcbeb);
+        
+
+        circle_marker_f02798634dffcc56d628fe6903cd1337.bindPopup(popup_24cf45a821a06cdb90043f54385ec7a5)
+        ;
+
+        
+    
+    
+            var circle_marker_5d3edcc779fe804e9fd73dbc5680e964 = L.circleMarker(
+                [52.52, 13.405],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_5ee29f9f5d4bdd0171390c8efd9cc070 = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_f56ddf15681975f026b7a59a1a3d41e6 = $(`<div id=&quot;html_f56ddf15681975f026b7a59a1a3d41e6&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 200px;&quot;>         <h4 style=&quot;color: #7CD9A5; margin-bottom: 8px;&quot;>Berlin - Europe Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Cross-border operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Local market penetration</p>         <p style=&quot;margin: 4px 0;&quot;>• Smile Pickup integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 5-15 vehicles</p>         </div>         </div>`)[0];
+            popup_5ee29f9f5d4bdd0171390c8efd9cc070.setContent(html_f56ddf15681975f026b7a59a1a3d41e6);
+        
+
+        circle_marker_5d3edcc779fe804e9fd73dbc5680e964.bindPopup(popup_5ee29f9f5d4bdd0171390c8efd9cc070)
+        ;
+
+        
+    
+    
+            var circle_marker_48c668be892f34509d23de07420e2c8a = L.circleMarker(
+                [45.4642, 9.19],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_4e6ad32f1f91d6b14083c523d73e01e3 = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_31a71c9afcc630d5debf12f56288fcec = $(`<div id=&quot;html_31a71c9afcc630d5debf12f56288fcec&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 200px;&quot;>         <h4 style=&quot;color: #7CD9A5; margin-bottom: 8px;&quot;>Milan - Europe Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Cross-border operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Local market penetration</p>         <p style=&quot;margin: 4px 0;&quot;>• Smile Pickup integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 5-15 vehicles</p>         </div>         </div>`)[0];
+            popup_4e6ad32f1f91d6b14083c523d73e01e3.setContent(html_31a71c9afcc630d5debf12f56288fcec);
+        
+
+        circle_marker_48c668be892f34509d23de07420e2c8a.bindPopup(popup_4e6ad32f1f91d6b14083c523d73e01e3)
+        ;
+
+        
+    
+    
+            var circle_marker_b3e106855e6881b61844e4b8a9068b93 = L.circleMarker(
+                [52.2297, 21.0122],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#2c3e50&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#2c3e50&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;opacity&quot;: 1.0, &quot;radius&quot;: 9, &quot;stroke&quot;: true, &quot;weight&quot;: 2}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+        var popup_cf4c198675ff10d017f9e9eab1761270 = L.popup({&quot;maxWidth&quot;: 300});
+
+        
+            var html_fe41b2d2c07478bd44ebfb518d88410b = $(`<div id=&quot;html_fe41b2d2c07478bd44ebfb518d88410b&quot; style=&quot;width: 100.0%; height: 100.0%;&quot;>         <div style=&quot;font-family: Arial; width: 200px;&quot;>         <h4 style=&quot;color: #7CD9A5; margin-bottom: 8px;&quot;>Warsaw - Europe Hub</h4>         <p style=&quot;margin: 4px 0;&quot;>• Cross-border operations</p>         <p style=&quot;margin: 4px 0;&quot;>• Local market penetration</p>         <p style=&quot;margin: 4px 0;&quot;>• Smile Pickup integration</p>         <p style=&quot;margin: 4px 0;&quot;>• Fleet: 5-15 vehicles</p>         </div>         </div>`)[0];
+            popup_cf4c198675ff10d017f9e9eab1761270.setContent(html_fe41b2d2c07478bd44ebfb518d88410b);
+        
+
+        circle_marker_b3e106855e6881b61844e4b8a9068b93.bindPopup(popup_cf4c198675ff10d017f9e9eab1761270)
+        ;
+
+        
+    
+    
+            var poly_line_62c616f43c765f5497595bb35a6823b8 = L.polyline(
+                [[48.8566, 2.3522], [45.764, 4.8357]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#e74c3c&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#e74c3c&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.8, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 4}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var poly_line_2bbc6c21e1708513d61492fedd3951b7 = L.polyline(
+                [[48.8566, 2.3522], [43.2965, 5.3698]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#e74c3c&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#e74c3c&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.8, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 4}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var poly_line_9c729b91ab4ca9b004d2f38e5f87bccf = L.polyline(
+                [[48.8566, 2.3522], [50.6292, 3.0573]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#e74c3c&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#e74c3c&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.8, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 4}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var poly_line_8b12248c3ee9e66032d8699110346cde = L.polyline(
+                [[48.8566, 2.3522], [44.8378, -0.5792]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#e74c3c&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#e74c3c&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.8, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 4}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var poly_line_bec325816f1fd274e354444952213ea7 = L.polyline(
+                [[48.8566, 2.3522], [48.5734, 7.7521]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#e74c3c&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#e74c3c&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.8, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 4}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var poly_line_e98487ff0c404ba0ca93cfe2fa1f36cb = L.polyline(
+                [[48.8566, 2.3522], [47.25, 0.6833]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#e74c3c&quot;, &quot;dashArray&quot;: null, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#e74c3c&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.8, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 4}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var poly_line_d5605573cf5b03f195e19a55ce2b69ed = L.polyline(
+                [[48.8566, 2.3522], [40.4168, -3.7038]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#3498db&quot;, &quot;dashArray&quot;: &quot;10, 5&quot;, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#3498db&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.7, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 3}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var poly_line_4be9d0d770cceee9c81430ba1d92f81e = L.polyline(
+                [[48.8566, 2.3522], [41.3851, 2.1734]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#3498db&quot;, &quot;dashArray&quot;: &quot;10, 5&quot;, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#3498db&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.7, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 3}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var poly_line_59d9cd80f454904853089f0ab426a3d7 = L.polyline(
+                [[48.8566, 2.3522], [50.8503, 4.3517]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#3498db&quot;, &quot;dashArray&quot;: &quot;10, 5&quot;, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#3498db&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.7, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 3}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var poly_line_40dd3e57e65c82208a991f864149cca1 = L.polyline(
+                [[48.8566, 2.3522], [52.52, 13.405]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#3498db&quot;, &quot;dashArray&quot;: &quot;10, 5&quot;, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#3498db&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.7, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 3}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var poly_line_16ecc3913990fb3d64cbf8809b2fe69a = L.polyline(
+                [[48.8566, 2.3522], [45.4642, 9.19]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#3498db&quot;, &quot;dashArray&quot;: &quot;10, 5&quot;, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#3498db&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.7, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 3}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+    
+            var poly_line_05062f2d279de2bca22b3befed0a7a75 = L.polyline(
+                [[48.8566, 2.3522], [52.2297, 21.0122]],
+                {&quot;bubblingMouseEvents&quot;: true, &quot;color&quot;: &quot;#3498db&quot;, &quot;dashArray&quot;: &quot;10, 5&quot;, &quot;dashOffset&quot;: null, &quot;fill&quot;: false, &quot;fillColor&quot;: &quot;#3498db&quot;, &quot;fillOpacity&quot;: 0.2, &quot;fillRule&quot;: &quot;evenodd&quot;, &quot;lineCap&quot;: &quot;round&quot;, &quot;lineJoin&quot;: &quot;round&quot;, &quot;noClip&quot;: false, &quot;opacity&quot;: 0.7, &quot;smoothFactor&quot;: 1.0, &quot;stroke&quot;: true, &quot;weight&quot;: 3}
+            ).addTo(map_9f817596b00224c066f7311ba25d79c3);
+        
+</script>
+</html>"></iframe>
+        </div>
+        <div class="sidebar">
+            <div class="panel">
+                <h3>Network Overview</h3>
+                <div class="metric">
+                    <span class="metric-label">Total Sites</span>
+                    <span class="metric-value">70</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Warehouse Space</span>
+                    <span class="metric-value">2,000,000 m²</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Fleet Size</span>
+                    <span class="metric-value">320 vehicles</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Clean Fleet %</span>
+                    <span class="metric-value">50%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Revenue 2025</span>
+                    <span class="metric-value">€500M</span>
+                </div>
+            </div>
+            <div class="panel">
+                <h3>Map Legend</h3>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color flagship"></div>
+                        <span>Flagship Facility (Sorigny)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color major-hub"></div>
+                        <span>Major French Hubs</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color europe-hub"></div>
+                        <span>European Expansion</span>
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <h3>Vertical Markets</h3>
+                <div class="vertical-grid">
+                    <div class="vertical-card">
+                        <h4>Fashion/Luxury</h4>
+                        <p>40% volume share</p>
+                    </div>
+                    <div class="vertical-card">
+                        <h4>Cosmetics/Perfumes</h4>
+                        <p>25% volume share</p>
+                    </div>
+                    <div class="vertical-card">
+                        <h4>Pharma/Healthcare</h4>
+                        <p>15% volume share</p>
+                    </div>
+                    <div class="vertical-card">
+                        <h4>Industrial/Auto</h4>
+                        <p>20% volume share</p>
+                    </div>
+                </div>
+            </div>
+            <div class="panel">
+                <h3>Zeus Scenarios</h3>
+                <p style="font-size: 0.9em; color: #666; margin-bottom: 13px;">
+                    Click a scenario to view optimization results
+                </p>
+                <div class="scenario-buttons">
+                    <button class="scenario-btn" id="btnCost">Cost vs CO₂</button>
+                    <button class="scenario-btn" id="btnFleet">Fleet Electrification</button>
+                    <button class="scenario-btn" id="btnExpansion">Network Expansion</button>
+                    <button class="scenario-btn" id="btnConsolidation">Delivery Consolidation</button>
+                </div>
+                <div class="scenario-panel" id="scenarioPanel">
+                    <div id="scenarioMetrics">
+                        <p style="color: #666; font-style: italic;">Select a scenario above to view optimization results and metrics.</p>
+                    </div>
+                    <div class="scenario-summary" id="scenarioSummary"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const scenarioData = {"cost": {"title": "Cost vs CO\u2082", "metrics": [{"label": "Optimized Cost", "value": "\u20ac12.3M"}, {"label": "CO\u2082 Emissions", "value": "4,200 t"}, {"label": "Cost per t CO\u2082 Saved", "value": "\u20ac1,100"}, {"label": "Top Emitting Route", "value": "Paris\u2013Marseille"}], "summary": "This scenario balances operational cost and carbon emissions. Routes and fleet mix are optimized for the best trade-off."}, "fleet": {"title": "Fleet Electrification", "metrics": [{"label": "EV Share", "value": "38%"}, {"label": "Diesel Share", "value": "62%"}, {"label": "Charging Points Needed", "value": "14"}, {"label": "ROI Timeline", "value": "4.2 years"}], "summary": "This scenario shows the transition to electric vehicles, highlighting best-suited routes and infrastructure needs."}, "expansion": {"title": "Network Expansion", "metrics": [{"label": "New Hubs Proposed", "value": "3"}, {"label": "Coverage Increase", "value": "+18%"}, {"label": "Investment", "value": "\u20ac7.5M"}, {"label": "Delivery Time Gain", "value": "-1.2 days"}], "summary": "This scenario optimizes where to add new hubs or expand, showing demand coverage and investment impact."}, "consolidation": {"title": "Delivery Consolidation", "metrics": [{"label": "Routes Optimized", "value": "22"}, {"label": "Vehicle Utilization", "value": "+24%"}, {"label": "Consolidation Gain", "value": "\u20ac1.1M"}, {"label": "Last-Mile CO\u2082", "value": "-9%"}], "summary": "This scenario consolidates deliveries for efficiency, showing route optimization and last-mile improvements."}};
+        
+        function updateScenario(scenarioKey) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.scenario-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Add active class to clicked button
+            document.getElementById('btn' + scenarioKey.charAt(0).toUpperCase() + scenarioKey.slice(1)).classList.add('active');
+            
+            // Update map container class
+            const mapContainer = document.getElementById('mapContainer');
+            mapContainer.className = 'map-container scenario-' + scenarioKey;
+            
+            // Update scenario panel class
+            const scenarioPanel = document.getElementById('scenarioPanel');
+            scenarioPanel.className = 'scenario-panel scenario-' + scenarioKey;
+            
+            // Update metrics
+            const data = scenarioData[scenarioKey];
+            let metricsHTML = '<h4 style="color: #766CDB; margin-bottom: 10px; margin-top: 0;">' + data.title + '</h4>';
+            data.metrics.forEach(metric => {
+                metricsHTML += '<div class="metric"><span class="metric-label">' + metric.label + '</span><span class="metric-value">' + metric.value + '</span></div>';
+            });
+            document.getElementById('scenarioMetrics').innerHTML = metricsHTML;
+            
+            // Update summary
+            document.getElementById('scenarioSummary').innerHTML = data.summary;
+        }
+        
+        // Add event listeners
+        document.getElementById('btnCost').addEventListener('click', () => updateScenario('cost'));
+        document.getElementById('btnFleet').addEventListener('click', () => updateScenario('fleet'));
+        document.getElementById('btnExpansion').addEventListener('click', () => updateScenario('expansion'));
+        document.getElementById('btnConsolidation').addEventListener('click', () => updateScenario('consolidation'));
+    </script>
+</body>
+</html>
