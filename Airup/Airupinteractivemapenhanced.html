@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirUp Enhanced Interactive Supply Chain Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        body { 
+            font-family: 'Arial', sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: #f0f2f5; 
+        }
+        #map { 
+            width: 100vw; 
+            height: 100vh; 
+        }
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            max-width: 300px;
+        }
+        .cluster-toggle {
+            margin: 5px 0;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            width: 100%;
+        }
+        .core-europe { background: #28a745; }
+        .southern-europe { background: #fd7e14; }
+        .eastern-europe { background: #6f42c1; }
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .popup-content {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        .popup-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .popup-details {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <div class="info-panel">
+        <h3 style="margin-top: 0; color: #2c3e50;">AirUp Network Control</h3>
+        <button class="cluster-toggle core-europe" onclick="toggleCluster('core')">
+            <i class="fas fa-eye"></i> Core Europe
+        </button>
+        <button class="cluster-toggle southern-europe" onclick="toggleCluster('southern')">
+            <i class="fas fa-eye"></i> Southern Europe
+        </button>
+        <button class="cluster-toggle eastern-europe" onclick="toggleCluster('eastern')">
+            <i class="fas fa-eye"></i> Eastern Europe
+        </button>
+        <hr style="margin: 15px 0;">
+        <div id="stats">
+            <strong>Network Stats:</strong><br>
+            Total Cities: <span id="total-cities">12</span><br>
+            Active Routes: <span id="active-routes">12</span><br>
+            Monthly Shipments: <span id="monthly-shipments">725</span>
+        </div>
+    </div>
+    
+    <div class="legend">
+        <h4 style="margin-top: 0; color: #2c3e50;">Legend</h4>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #007bff;"></div>
+            <span>Veghel Hub</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #28a745;"></div>
+            <span>Core Europe</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #fd7e14;"></div>
+            <span>Southern Europe</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #6f42c1;"></div>
+            <span>Eastern Europe</span>
+        </div>
+    </div>
+
+    <script>
+        // Initialize map
+        var map = L.map('map').setView([51.6167, 5.5486], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Veghel Hub
+        var hubIcon = L.divIcon({
+            html: '<i class="fas fa-industry" style="color: #007bff; font-size: 24px;"></i>',
+            iconSize: [30, 30],
+            className: 'custom-div-icon'
+        });
+        
+        var veghel = L.marker([51.6167, 5.5486], {icon: hubIcon}).addTo(map)
+            .bindPopup('<div class="popup-content"><div class="popup-title">🏭 Veghel Hub</div><div class="popup-details">Main Distribution Center<br>Netherlands<br><strong>Daily Capacity:</strong> 500 pallets<br><strong>Operating Hours:</strong> 24/7</div></div>');
+        
+        // Cluster data with enhanced information
+        var clusters = {
+            core: {
+                name: 'Core Europe',
+                color: '#28a745',
+                visible: true,
+                cities: [
+                    {name: 'Amsterdam', coords: [52.3676, 4.9041], shipments: 120, distance: '85km', transit: '2h'},
+                    {name: 'Frankfurt', coords: [50.1109, 8.6821], shipments: 95, distance: '320km', transit: '4h'},
+                    {name: 'Paris', coords: [48.8566, 2.3522], shipments: 110, distance: '485km', transit: '6h'},
+                    {name: 'London', coords: [51.5074, -0.1278], shipments: 80, distance: '520km', transit: '8h'}
+                ]
+            },
+            southern: {
+                name: 'Southern Europe',
+                color: '#fd7e14',
+                visible: true,
+                cities: [
+                    {name: 'Rome', coords: [41.9028, 12.4964], shipments: 60, distance: '1,450km', transit: '18h'},
+                    {name: 'Madrid', coords: [40.4168, -3.7038], shipments: 55, distance: '1,680km', transit: '20h'},
+                    {name: 'Barcelona', coords: [41.3851, 2.1734], shipments: 50, distance: '1,280km', transit: '16h'},
+                    {name: 'Florence', coords: [43.7696, 11.2558], shipments: 30, distance: '1,200km', transit: '15h'}
+                ]
+            },
+            eastern: {
+                name: 'Eastern Europe',
+                color: '#6f42c1',
+                visible: true,
+                cities: [
+                    {name: 'Warsaw', coords: [52.2297, 21.0122], shipments: 40, distance: '1,180km', transit: '14h'},
+                    {name: 'Prague', coords: [50.0755, 14.4378], shipments: 35, distance: '920km', transit: '11h'},
+                    {name: 'Budapest', coords: [47.4979, 19.0402], shipments: 32, distance: '1,250km', transit: '15h'},
+                    {name: 'Ceske Budejovice', coords: [49.8175, 15.473], shipments: 18, distance: '980km', transit: '12h'}
+                ]
+            }
+        };
+        
+        var clusterLayers = {};
+        
+        // Create markers and routes for each cluster
+        Object.keys(clusters).forEach(function(clusterId) {
+            var cluster = clusters[clusterId];
+            var layerGroup = L.layerGroup();
+            
+            cluster.cities.forEach(function(city) {
+                var cityIcon = L.divIcon({
+                    html: '<i class="fas fa-truck" style="color: ' + cluster.color + '; font-size: 20px;"></i>',
+                    iconSize: [25, 25],
+                    className: 'custom-div-icon'
+                });
+                
+                var marker = L.marker(city.coords, {icon: cityIcon})
+                    .bindPopup('<div class="popup-content"><div class="popup-title">🚛 ' + city.name + '</div><div class="popup-details">Cluster: ' + cluster.name + '<br><strong>Monthly Shipments:</strong> ' + city.shipments + '<br><strong>Distance from Hub:</strong> ' + city.distance + '<br><strong>Transit Time:</strong> ' + city.transit + '</div></div>');
+                
+                var route = L.polyline([[51.6167, 5.5486], city.coords], {
+                    color: cluster.color,
+                    weight: 3,
+                    opacity: 0.7,
+                    dashArray: '5, 10'
+                });
+                
+                layerGroup.addLayer(marker);
+                layerGroup.addLayer(route);
+            });
+            
+            clusterLayers[clusterId] = layerGroup;
+            layerGroup.addTo(map);
+        });
+        
+        // Toggle cluster visibility
+        function toggleCluster(clusterId) {
+            var cluster = clusters[clusterId];
+            var button = document.querySelector('.cluster-toggle.' + clusterId.replace('_', '-'));
+            
+            if (cluster.visible) {
+                map.removeLayer(clusterLayers[clusterId]);
+                cluster.visible = false;
+                button.innerHTML = '<i class="fas fa-eye-slash"></i> ' + cluster.name;
+                button.style.opacity = '0.5';
+            } else {
+                map.addLayer(clusterLayers[clusterId]);
+                cluster.visible = true;
+                button.innerHTML = '<i class="fas fa-eye"></i> ' + cluster.name;
+                button.style.opacity = '1';
+            }
+            
+            updateStats();
+        }
+        
+        // Update statistics
+        function updateStats() {
+            var activeCities = 0;
+            var activeRoutes = 0;
+            var totalShipments = 0;
+            
+            Object.keys(clusters).forEach(function(clusterId) {
+                if (clusters[clusterId].visible) {
+                    activeCities += clusters[clusterId].cities.length;
+                    activeRoutes += clusters[clusterId].cities.length;
+                    clusters[clusterId].cities.forEach(function(city) {
+                        totalShipments += city.shipments;
+                    });
+                }
+            });
+            
+            document.getElementById('total-cities').textContent = activeCities;
+            document.getElementById('active-routes').textContent = activeRoutes;
+            document.getElementById('monthly-shipments').textContent = totalShipments;
+        }
+        
+        // Add click event to show route details
+        map.on('click', function(e) {
+            console.log('Clicked at: ' + e.latlng);
+        });
+        
+        // Initialize stats
+        updateStats();
+    </script>
+</body>
+</html>
