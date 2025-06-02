@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AirUp Supply Chain Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 0; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 0 20px 0; text-align: center; border-radius: 0 0 30px 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .header h1 { margin: 0; font-size: 2.7em; font-weight: 300; }
+        .section { max-width: 900px; margin: 40px auto 0 auto; background: white; border-radius: 18px; box-shadow: 0 4px 15px rgba(0,0,0,0.07); padding: 30px 30px 10px 30px; }
+        .section h2 { color: #764ba2; margin-top: 0; }
+        .chart { margin: 30px 0 10px 0; }
+        .explanation { color: #444; font-size: 1.08em; margin-bottom: 18px; }
+        @media (max-width: 600px) {
+            .section { padding: 10px 2vw 5px 2vw; }
+            .header h1 { font-size: 1.5em; }
+        }
+    </style>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>AirUp European Supply Chain Dashboard</h1>
+    </div>
+    
+    <div class="section">
+        <h2>Transport Distance Reduction</h2>
+        <div class="explanation">AirUp's nearshoring strategy reduced average transport distance by 97%, dramatically lowering emissions and costs.</div>
+        <div class="chart">
+            <div id="chart1"></div>
+            <script>
+                var data1 = [{
+                    x: ['Before (Asia-Europe)', 'After (European Network)'],
+                    y: [100, 3],
+                    type: 'bar',
+                    text: ['100%', '3%'],
+                    textposition: 'outside',
+                    textfont: {size: 22, color: 'black'},
+                    marker: {color: ['#ff6b6b', '#4ecdc4']}
+                }];
+                var layout1 = {
+                    title: 'Transport Distance Reduction (97% Improvement)',
+                    yaxis: {title: 'Relative Distance (%)', range: [0, 118]},
+                    xaxis: {title: ''},
+                    plot_bgcolor: 'white',
+                    paper_bgcolor: '#f8f9fa',
+                    height: 420,
+                    margin: {l: 80, r: 80, t: 120, b: 80}
+                };
+                Plotly.newPlot('chart1', data1, layout1);
+            </script>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Delivery Lead Times by Region</h2>
+        <div class="explanation">Centralised European distribution enables rapid delivery: 1-2 days for Germany, 3-5 days for Southern/Eastern Europe.</div>
+        <div class="chart">
+            <div id="chart2"></div>
+            <script>
+                var data2 = [{
+                    x: ['Germany', 'France/UK', 'Southern Europe', 'Eastern Europe'],
+                    y: [1.5, 2, 4, 4.5],
+                    type: 'bar',
+                    text: ['1.5d', '2d', '4d', '4.5d'],
+                    textposition: 'outside',
+                    textfont: {size: 22, color: 'black'},
+                    marker: {color: ['#2ecc71', '#3498db', '#f39c12', '#e74c3c']}
+                }];
+                var layout2 = {
+                    title: 'Delivery Lead Times by Region',
+                    yaxis: {title: 'Days', range: [0, 5.3]},
+                    xaxis: {title: ''},
+                    plot_bgcolor: 'white',
+                    paper_bgcolor: '#f8f9fa',
+                    height: 420,
+                    margin: {l: 80, r: 80, t: 120, b: 80}
+                };
+                Plotly.newPlot('chart2', data2, layout2);
+            </script>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Operational Capacity</h2>
+        <div class="explanation">The network now handles 20+ bottle variants, serves 14 countries, and integrates 3 major facilities for scale and flexibility.</div>
+        <div class="chart">
+            <div id="chart3"></div>
+            <script>
+                var data3 = [{
+                    x: ['Bottle Variants', 'Countries Served', 'Facilities Integrated'],
+                    y: [20, 14, 3],
+                    type: 'bar',
+                    text: [20, 14, 3],
+                    textposition: 'outside',
+                    textfont: {size: 22, color: 'black'},
+                    marker: {color: ['#9b59b6', '#34495e', '#16a085']}
+                }];
+                var layout3 = {
+                    title: 'Operational Capacity Metrics',
+                    yaxis: {title: 'Count', range: [0, 24]},
+                    xaxis: {title: ''},
+                    plot_bgcolor: 'white',
+                    paper_bgcolor: '#f8f9fa',
+                    height: 420,
+                    margin: {l: 80, r: 80, t: 120, b: 80}
+                };
+                Plotly.newPlot('chart3', data3, layout3);
+            </script>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Cost Reduction Impact</h2>
+        <div class="explanation">Most cost savings come from transportation, followed by inventory optimisation and manufacturing efficiency.</div>
+        <div class="chart">
+            <div id="chart4"></div>
+            <script>
+                var data4 = [{
+                    labels: ['Transportation Savings', 'Inventory Optimisation', 'Manufacturing Efficiency', 'Other Improvements'],
+                    values: [45, 25, 20, 10],
+                    type: 'pie',
+                    hole: 0.4,
+                    textinfo: 'percent+label',
+                    textposition: 'inside',
+                    textfont: {size: 20},
+                    marker: {colors: ['#e74c3c', '#3498db', '#2ecc71', '#f39c12']}
+                }];
+                var layout4 = {
+                    title: 'Cost Reduction Impact Areas',
+                    paper_bgcolor: '#f8f9fa',
+                    height: 420,
+                    margin: {l: 80, r: 80, t: 120, b: 80}
+                };
+                Plotly.newPlot('chart4', data4, layout4);
+            </script>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Sustainability Achievements</h2>
+        <div class="explanation">97% CO₂ reduction, 100% renewable energy at the main hub, and 85% adoption of sustainable packaging.</div>
+        <div class="chart">
+            <div id="chart5"></div>
+            <script>
+                var data5 = [{
+                    x: ['CO₂ Reduction', 'Renewable Energy Usage', 'Sustainable Packaging'],
+                    y: [97, 100, 85],
+                    type: 'bar',
+                    text: ['97%', '100%', '85%'],
+                    textposition: 'outside',
+                    textfont: {size: 22, color: 'black'},
+                    marker: {color: ['#27ae60', '#2ecc71', '#58d68d']}
+                }];
+                var layout5 = {
+                    title: 'Sustainability Impact (%)',
+                    yaxis: {title: 'Percentage (%)', range: [0, 118]},
+                    xaxis: {title: ''},
+                    plot_bgcolor: 'white',
+                    paper_bgcolor: '#f8f9fa',
+                    height: 420,
+                    margin: {l: 80, r: 80, t: 120, b: 80}
+                };
+                Plotly.newPlot('chart5', data5, layout5);
+            </script>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2>Efficiency Timeline</h2>
+        <div class="explanation">Supply chain efficiency has doubled from 2022 to 2025, reflecting the impact of each strategic initiative.</div>
+        <div class="chart">
+            <div id="chart6"></div>
+            <script>
+                var data6 = [{
+                    x: ['2022', '2023', '2024', '2025'],
+                    y: [45, 70, 85, 95],
+                    mode: 'lines+markers+text',
+                    line: {color: '#3498db', width: 4},
+                    marker: {size: 12, color: '#3498db'},
+                    text: [45, 70, 85, 95],
+                    textposition: 'top center',
+                    textfont: {size: 20, color: 'black'},
+                    type: 'scatter'
+                }];
+                var layout6 = {
+                    title: 'Supply Chain Efficiency Timeline',
+                    yaxis: {title: 'Efficiency Score', range: [0, 112]},
+                    xaxis: {title: 'Year'},
+                    plot_bgcolor: 'white',
+                    paper_bgcolor: '#f8f9fa',
+                    height: 420,
+                    margin: {l: 80, r: 80, t: 120, b: 80}
+                };
+                Plotly.newPlot('chart6', data6, layout6);
+            </script>
+        </div>
+    </div>
+</body>
+</html>
