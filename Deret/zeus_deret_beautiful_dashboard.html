@@ -1,0 +1,368 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeus AI Clustering & Optimization Dashboard - Groupe Deret</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: #2C3E50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .dashboard-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .dashboard-header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .dashboard-header p {
+            font-size: 1.2rem;
+            color: #7F8C8D;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+        
+        .section h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2C3E50;
+            margin-bottom: 20px;
+            border-left: 4px solid #4ECDC4;
+            padding-left: 20px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #ECF0F1;
+            font-size: 0.9rem;
+        }
+        
+        tr:hover {
+            background-color: #F8F9FA;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .impact-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .impact-list li {
+            background: #F8F9FA;
+            margin: 10px 0;
+            padding: 15px 20px;
+            border-radius: 10px;
+            border-left: 4px solid #4ECDC4;
+            font-size: 1.1rem;
+        }
+        
+        .impact-list li strong {
+            color: #2C3E50;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-header h1 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Zeus AI Clustering & Optimization Dashboard</h1>
+            <p>Transforming Groupe Deret's Logistics Through Intelligent Clustering and Route Optimization</p>
+        </div>
+        
+        <div class="section">
+            <h2>🚚 The Challenge: Fragmented Loads Across 70+ Sites</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 20px; color: #7F8C8D;">
+                Groupe Deret's logistics network spans over 70 sites, serving multiple verticals—fashion, cosmetics, pharma, and industrial. 
+                On a typical day, urgent orders from different clients and regions would each trigger a separate truck, often running at only 60–62% capacity.
+            </p>
+            <div class="table-container">
+                <table border="1" class="dataframe table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Order</th>
+      <th>Truck Dispatched</th>
+      <th>Capacity Utilization (%)</th>
+      <th>Route Overlap</th>
+      <th>Delivery Window</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Fashion (Lyon)</td>
+      <td>Yes</td>
+      <td>60</td>
+      <td>A10</td>
+      <td>Thu</td>
+    </tr>
+    <tr>
+      <td>Cosmetics (Marseille)</td>
+      <td>Yes</td>
+      <td>62</td>
+      <td>A7</td>
+      <td>Fri</td>
+    </tr>
+    <tr>
+      <td>Pharma (Lille)</td>
+      <td>Yes</td>
+      <td>59</td>
+      <td>A1</td>
+      <td>Wed</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 Zeus AI Solution: Regional Hub Assignment</h2>
+            <p style="font-size: 1.1rem; margin-bottom: 20px; color: #7F8C8D;">
+                Zeus AI transforms this fragmented approach by analyzing all incoming shipments, identifying patterns in demand, 
+                and proactively grouping compatible orders into regional clusters.
+            </p>
+            <div class="table-container">
+                <table border="1" class="dataframe table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Cluster Region</th>
+      <th>Example Cities</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Southern France</td>
+      <td>Lyon, Marseille, Nice</td>
+    </tr>
+    <tr>
+      <td>Northern France</td>
+      <td>Paris, Lille, Reims</td>
+    </tr>
+    <tr>
+      <td>Southwest</td>
+      <td>Bordeaux, Toulouse, Montpellier</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📊 Before & After: Transformation Metrics</h2>
+            <div class="table-container">
+                <table border="1" class="dataframe table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Metric</th>
+      <th>Before Zeus</th>
+      <th>After Zeus</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Trucks Dispatched (monthly)</td>
+      <td>2100</td>
+      <td>1470</td>
+    </tr>
+    <tr>
+      <td>Avg. Trailer Utilization (%)</td>
+      <td>68.5</td>
+      <td>89.2</td>
+    </tr>
+    <tr>
+      <td>Cost per Pallet (€)</td>
+      <td>185</td>
+      <td>142</td>
+    </tr>
+    <tr>
+      <td>Empty Km per Route</td>
+      <td>520</td>
+      <td>180</td>
+    </tr>
+    <tr>
+      <td>Planning Coordination Time</td>
+      <td>High</td>
+      <td>-55%</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📈 Interactive Performance Visualization</h2>
+            <div class="chart-container">
+                <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>                <div id="7d87c6ec-a34a-45ea-bb1c-f85da95e5477" class="plotly-graph-div" style="height:800px; width:1200px;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("7d87c6ec-a34a-45ea-bb1c-f85da95e5477")) {                    Plotly.newPlot(                        "7d87c6ec-a34a-45ea-bb1c-f85da95e5477",                        [{"hovertemplate":"\u003cb\u003e%{x}\u003c\u002fb\u003e\u003cbr\u003eUtilization: %{y}%\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":["#FF6B6B","#4ECDC4"],"line":{"color":"rgba(0,0,0,0.1)","width":1}},"name":"Utilization","text":["68.5%","89.2%"],"textfont":{"color":"#2C3E50","size":14},"textposition":"outside","x":["Before Zeus","After Zeus"],"y":[68.5,89.2],"type":"bar","xaxis":"x","yaxis":"y"},{"hovertemplate":"\u003cb\u003e%{x}\u003c\u002fb\u003e\u003cbr\u003eTrucks: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":["#FF6B6B","#4ECDC4"],"line":{"color":"rgba(0,0,0,0.1)","width":1}},"name":"Trucks","text":["2,100","1,470"],"textfont":{"color":"#2C3E50","size":14},"textposition":"outside","x":["Before Zeus","After Zeus"],"y":[2100,1470],"type":"bar","xaxis":"x2","yaxis":"y2"},{"hovertemplate":"\u003cb\u003e%{x}\u003c\u002fb\u003e\u003cbr\u003eEmpty Km: %{y}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":["#FF6B6B","#4ECDC4"],"line":{"color":"rgba(0,0,0,0.1)","width":1}},"name":"Empty Km","text":["520 km","180 km"],"textfont":{"color":"#2C3E50","size":14},"textposition":"outside","x":["Before Zeus","After Zeus"],"y":[520,180],"type":"bar","xaxis":"x3","yaxis":"y3"},{"hovertemplate":"\u003cb\u003e%{x}\u003c\u002fb\u003e\u003cbr\u003eCost: \u20ac%{y}\u003cextra\u003e\u003c\u002fextra\u003e","marker":{"color":["#FF6B6B","#4ECDC4"],"line":{"color":"rgba(0,0,0,0.1)","width":1}},"name":"Cost","text":["\u20ac185","\u20ac142"],"textfont":{"color":"#2C3E50","size":14},"textposition":"outside","x":["Before Zeus","After Zeus"],"y":[185,142],"type":"bar","xaxis":"x4","yaxis":"y4"}],                        {"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}},"xaxis":{"anchor":"y","domain":[0.0,0.45],"showgrid":false,"showline":true,"linewidth":1,"linecolor":"#BDC3C7"},"yaxis":{"anchor":"x","domain":[0.56,1.0],"showgrid":true,"gridwidth":1,"gridcolor":"rgba(189,195,199,0.3)","showline":true,"linewidth":1,"linecolor":"#BDC3C7"},"xaxis2":{"anchor":"y2","domain":[0.55,1.0],"showgrid":false,"showline":true,"linewidth":1,"linecolor":"#BDC3C7"},"yaxis2":{"anchor":"x2","domain":[0.56,1.0],"showgrid":true,"gridwidth":1,"gridcolor":"rgba(189,195,199,0.3)","showline":true,"linewidth":1,"linecolor":"#BDC3C7"},"xaxis3":{"anchor":"y3","domain":[0.0,0.45],"showgrid":false,"showline":true,"linewidth":1,"linecolor":"#BDC3C7"},"yaxis3":{"anchor":"x3","domain":[0.0,0.44],"showgrid":true,"gridwidth":1,"gridcolor":"rgba(189,195,199,0.3)","showline":true,"linewidth":1,"linecolor":"#BDC3C7"},"xaxis4":{"anchor":"y4","domain":[0.55,1.0],"showgrid":false,"showline":true,"linewidth":1,"linecolor":"#BDC3C7"},"yaxis4":{"anchor":"x4","domain":[0.0,0.44],"showgrid":true,"gridwidth":1,"gridcolor":"rgba(189,195,199,0.3)","showline":true,"linewidth":1,"linecolor":"#BDC3C7"},"annotations":[{"font":{"size":16,"color":"#34495E","family":"Arial"},"showarrow":false,"text":"Average Trailer Utilization (%)","x":0.225,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16,"color":"#34495E","family":"Arial"},"showarrow":false,"text":"Monthly Trucks Dispatched","x":0.775,"xanchor":"center","xref":"paper","y":1.0,"yanchor":"bottom","yref":"paper"},{"font":{"size":16,"color":"#34495E","family":"Arial"},"showarrow":false,"text":"Empty Kilometers per Route","x":0.225,"xanchor":"center","xref":"paper","y":0.44,"yanchor":"bottom","yref":"paper"},{"font":{"size":16,"color":"#34495E","family":"Arial"},"showarrow":false,"text":"Cost per Pallet (\u20ac)","x":0.775,"xanchor":"center","xref":"paper","y":0.44,"yanchor":"bottom","yref":"paper"}],"title":{"font":{"size":28,"color":"#2C3E50","family":"Arial Black"},"text":"Zeus AI Clustering & Optimization: Transforming Deret's Logistics","x":0.5},"margin":{"l":80,"r":80,"t":100,"b":80},"font":{"family":"Arial, sans-serif","size":12,"color":"#2C3E50"},"height":800,"width":1200,"showlegend":false,"plot_bgcolor":"rgba(248,249,250,0.8)","paper_bgcolor":"white"},                        {"responsive": true}                    )                };                            </script>        </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🌍 Strategic & Environmental Impact</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">30%</div>
+                    <div class="metric-label">Fewer Trucks</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">20.7%</div>
+                    <div class="metric-label">Higher Utilization</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">340km</div>
+                    <div class="metric-label">Less Empty Driving</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">32%</div>
+                    <div class="metric-label">CO₂ Reduction</div>
+                </div>
+            </div>
+            <ul class="impact-list">
+                <li><strong>Operational Efficiency:</strong> 30% fewer trucks dispatched with 20.7% higher utilization rates</li>
+                <li><strong>Environmental Impact:</strong> 340 km fewer empty kilometers per route, achieving 32% CO₂ reduction</li>
+                <li><strong>Planning Simplification:</strong> 55% reduction in coordination time across 13 transport agencies</li>
+            </ul>
+        </div>
+        
+        <div class="section">
+            <h2>💰 Financial Impact & ROI</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">€8.7M</div>
+                    <div class="metric-label">Annual Savings</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">3.4</div>
+                    <div class="metric-label">Months Payback</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">348%</div>
+                    <div class="metric-label">Annual ROI</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">€23.6M</div>
+                    <div class="metric-label">3-Year Net Benefit</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
