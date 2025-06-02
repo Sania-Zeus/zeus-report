@@ -1,0 +1,410 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeus AI Optimization Dashboard - Groupe Deret</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #2C3E50;
+            padding: 20px;
+        }
+        
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2E86AB, #A23B72);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            color: #6B7280;
+            font-weight: 400;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .metric-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .metric-label {
+            font-size: 1rem;
+            color: #6B7280;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            min-height: 500px;
+        }
+        
+        .chart-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #2C3E50;
+            text-align: center;
+        }
+        
+        .chart-content {
+            height: 400px;
+            width: 100%;
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+            min-height: 600px;
+        }
+        
+        .full-width .chart-content {
+            height: 500px;
+        }
+        
+        @media (max-width: 1200px) {
+            .chart-row {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Zeus AI Optimization Dashboard</h1>
+            <p>Groupe Deret European Supply Chain Intelligence</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-value" style="color: #2E86AB;">4,191</div>
+                <div class="metric-label">Weekly Pallets</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" style="color: #4CAF50;">€7,360</div>
+                <div class="metric-label">Weekly Savings</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" style="color: #F18F01;">414 kg</div>
+                <div class="metric-label">CO₂ Reduced</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value" style="color: #A23B72;">71</div>
+                <div class="metric-label">Target EVs</div>
+            </div>
+        </div>
+        
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">Weekly Demand by Hub & Vertical</div>
+                <div class="chart-content" id="demand-chart"></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Route Optimization Impact</div>
+                <div class="chart-content" id="optimization-chart"></div>
+            </div>
+        </div>
+        
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">Fleet Electrification Progress</div>
+                <div class="chart-content" id="electrification-chart"></div>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Network Expansion ROI</div>
+                <div class="chart-content" id="expansion-chart"></div>
+            </div>
+        </div>
+        
+        <div class="chart-row">
+            <div class="chart-container full-width">
+                <div class="chart-title">Investment Requirements & Timeline</div>
+                <div class="chart-content" id="investment-chart"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Chart configuration
+        const config = {
+            displayModeBar: false,
+            responsive: true
+        };
+        
+        const baseLayout = {
+            font: { family: 'Inter, sans-serif', size: 12, color: '#2C3E50' },
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            margin: { l: 60, r: 40, t: 40, b: 60 },
+            showlegend: true,
+            legend: { 
+                orientation: 'h', 
+                y: -0.15, 
+                x: 0.5, 
+                xanchor: 'center',
+                font: { size: 11 }
+            }
+        };
+
+        // 1. Weekly Demand by Hub & Vertical
+        const demandData = [
+            {
+                x: ['Sorigny', 'Lyon', 'Marseille', 'Lille', 'Paris'],
+                y: [117, 752, 329, 228, 42],
+                name: 'Fashion/Luxury',
+                type: 'bar',
+                marker: { color: '#667eea' }
+            },
+            {
+                x: ['Sorigny', 'Lyon', 'Marseille', 'Lille', 'Paris'],
+                y: [40, 14, 480, 219, 294],
+                name: 'Cosmetics/Perfumes',
+                type: 'bar',
+                marker: { color: '#764ba2' }
+            },
+            {
+                x: ['Sorigny', 'Lyon', 'Marseille', 'Lille', 'Paris'],
+                y: [3, 562, 287, 38, 32],
+                name: 'Pharma/Healthcare',
+                type: 'bar',
+                marker: { color: '#f093fb' }
+            },
+            {
+                x: ['Sorigny', 'Lyon', 'Marseille', 'Lille', 'Paris'],
+                y: [69, 123, 253, 192, 117],
+                name: 'Industrial/Automotive',
+                type: 'bar',
+                marker: { color: '#f5576c' }
+            }
+        ];
+        
+        const demandLayout = {
+            ...baseLayout,
+            barmode: 'stack',
+            yaxis: { 
+                title: 'Pallets per Week', 
+                gridcolor: '#E5E7EB',
+                showline: true,
+                linecolor: '#D1D5DB'
+            },
+            xaxis: { 
+                title: 'Hub Location', 
+                gridcolor: '#E5E7EB',
+                showline: true,
+                linecolor: '#D1D5DB'
+            },
+            height: 400
+        };
+        
+        Plotly.newPlot('demand-chart', demandData, demandLayout, config);
+        
+        // 2. Route Optimization Impact
+        const optimizationData = [
+            {
+                x: ['Sorigny', 'Lyon', 'Marseille', 'Lille', 'Paris'],
+                y: [11, 63, 57, 30, 22],
+                name: 'Original',
+                type: 'bar',
+                marker: { color: '#E5E7EB' }
+            },
+            {
+                x: ['Sorigny', 'Lyon', 'Marseille', 'Lille', 'Paris'],
+                y: [9, 56, 50, 26, 19],
+                name: 'Optimized',
+                type: 'bar',
+                marker: { color: '#2E86AB' }
+            }
+        ];
+        
+        const optimizationLayout = {
+            ...baseLayout,
+            barmode: 'group',
+            yaxis: { 
+                title: 'Number of Dispatches', 
+                gridcolor: '#E5E7EB',
+                showline: true,
+                linecolor: '#D1D5DB'
+            },
+            xaxis: { 
+                title: 'Hub Location', 
+                gridcolor: '#E5E7EB',
+                showline: true,
+                linecolor: '#D1D5DB'
+            },
+            height: 400
+        };
+        
+        Plotly.newPlot('optimization-chart', optimizationData, optimizationLayout, config);
+        
+        // 3. Fleet Electrification Progress
+        const electrificationData = [
+            {
+                values: [52, 19, 116],
+                labels: ['Current EVs', 'New EVs Needed', 'Remaining Diesel'],
+                type: 'pie',
+                marker: {
+                    colors: ['#4CAF50', '#FF9800', '#6B7280']
+                },
+                textinfo: 'label+percent',
+                textposition: 'outside',
+                hole: 0.4
+            }
+        ];
+        
+        const electrificationLayout = {
+            ...baseLayout,
+            height: 400,
+            annotations: [{
+                text: '187<br>Total Fleet',
+                x: 0.5,
+                y: 0.5,
+                font: { size: 16, color: '#2C3E50' },
+                showarrow: false
+            }]
+        };
+        
+        Plotly.newPlot('electrification-chart', electrificationData, electrificationLayout, config);
+        
+        // 4. Network Expansion ROI
+        const expansionData = [{
+            x: ['Frankfurt', 'Amsterdam', 'Milan', 'Warsaw'],
+            y: [2.1, 5.1, 1.9, 1.8],
+            type: 'bar',
+            marker: {
+                color: ['#667eea', '#764ba2', '#f093fb', '#f5576c']
+            },
+            text: ['2.1 years', '5.1 years', '1.9 years', '1.8 years'],
+            textposition: 'outside'
+        }];
+        
+        const expansionLayout = {
+            ...baseLayout,
+            yaxis: { 
+                title: 'ROI (Years)', 
+                gridcolor: '#E5E7EB',
+                showline: true,
+                linecolor: '#D1D5DB'
+            },
+            xaxis: { 
+                title: 'Expansion Location', 
+                gridcolor: '#E5E7EB',
+                showline: true,
+                linecolor: '#D1D5DB'
+            },
+            showlegend: false,
+            height: 400
+        };
+        
+        Plotly.newPlot('expansion-chart', expansionData, expansionLayout, config);
+
+        // 5. Investment Requirements & Timeline
+        const investmentData = [
+            {
+                x: ['Fleet Electrification', 'Frankfurt Hub', 'Amsterdam Hub', 'Milan Hub', 'Warsaw Hub'],
+                y: [0.955, 2.8, 2.2, 3.1, 1.9],
+                type: 'bar',
+                marker: {
+                    color: ['#4CAF50', '#2E86AB', '#A23B72', '#F18F01', '#C73E1D']
+                },
+                text: ['€0.96M', '€2.8M', '€2.2M', '€3.1M', '€1.9M'],
+                textposition: 'outside'
+            }
+        ];
+        
+        const investmentLayout = {
+            ...baseLayout,
+            yaxis: { 
+                title: 'Investment (Million EUR)', 
+                gridcolor: '#E5E7EB',
+                showline: true,
+                linecolor: '#D1D5DB'
+            },
+            xaxis: { 
+                title: 'Investment Category', 
+                gridcolor: '#E5E7EB',
+                showline: true,
+                linecolor: '#D1D5DB'
+            },
+            showlegend: false,
+            height: 500
+        };
+        
+        Plotly.newPlot('investment-chart', investmentData, investmentLayout, config);
+    </script>
+</body>
+</html>
