@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_2d63217e15db88831464a8d191b43eb0 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+</head>
+<body>
+    
+    
+<div style="position: fixed; 
+            bottom: 30px; left: 30px; width: 260px; height: auto; 
+            background-color: white; border:2px solid grey; z-index:9999; 
+            font-size:14px; padding: 10px; border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+<h4 style="margin-top: 0; color: #2C3E50;">Legend</h4>
+<p><i class="fa fa-industry" style="color: green;"></i> Manufacturing Site</p>
+<p><i class="fa fa-warehouse" style="color: blue;"></i> Central Hub (Veghel DC)</p>
+<p><span style="color: red;">●</span> High Volume Market</p>
+<p><span style="color: orange;">●</span> Medium Volume Market</p>
+<p><span style="color: gray;">●</span> Low Volume Market</p>
+<p><span style="color: green; font-weight:bold;">━</span> Bottles Flow</p>
+<p><span style="color: purple; font-weight:bold;">━</span> Pods Flow</p>
+<p><span style="color: blue; font-weight:bold;">━</span> Outbound to Market</p>
+</div>
+    
+            <div class="folium-map" id="map_2d63217e15db88831464a8d191b43eb0" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_2d63217e15db88831464a8d191b43eb0 = L.map(
+                "map_2d63217e15db88831464a8d191b43eb0",
+                {
+                    center: [52.0, 5.0],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 5,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_7e5e14e694b519fe56db289d8a45971f = L.tileLayer(
+                "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"http://cartodb.com/attributions\"\u003eCartoDB\u003c/a\u003e, CartoDB \u003ca href =\"http://cartodb.com/attributions\"\u003eattributions\u003c/a\u003e", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            var marker_f5b0f86a1f2c433698379d6115dc2441 = L.marker(
+                [47.8095, 13.055],
+                {}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            var icon_8655f061f2d1fbf70273bf9acefd48cf = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "industry", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_f5b0f86a1f2c433698379d6115dc2441.setIcon(icon_8655f061f2d1fbf70273bf9acefd48cf);
+        
+    
+        var popup_2c28653d6c154e71c39c0cc6535d388f = L.popup({"maxWidth": "100%"});
+
+        
+            var html_3e35ad835eae21a8f444acf6c8fa6e2b = $(`<div id="html_3e35ad835eae21a8f444acf6c8fa6e2b" style="width: 100.0%; height: 100.0%;">Greiner Packaging (Austria) Bottle Manufacturing</div>`)[0];
+            popup_2c28653d6c154e71c39c0cc6535d388f.setContent(html_3e35ad835eae21a8f444acf6c8fa6e2b);
+        
+
+        marker_f5b0f86a1f2c433698379d6115dc2441.bindPopup(popup_2c28653d6c154e71c39c0cc6535d388f)
+        ;
+
+        
+    
+    
+            marker_f5b0f86a1f2c433698379d6115dc2441.bindTooltip(
+                `<div>
+                     Greiner Packaging (Austria)
+Bottle Manufacturing
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_362acfaa750902c6fdffc276700318a8 = L.marker(
+                [51.9244, 4.4777],
+                {}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            var icon_543e916d186af322e423fe103bdfab63 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "industry", "iconColor": "white", "markerColor": "green", "prefix": "fa"}
+            );
+            marker_362acfaa750902c6fdffc276700318a8.setIcon(icon_543e916d186af322e423fe103bdfab63);
+        
+    
+        var popup_3de8a3e5d7eacba81fa92549e76399df = L.popup({"maxWidth": "100%"});
+
+        
+            var html_821ee12295f816121370485ad1920af5 = $(`<div id="html_821ee12295f816121370485ad1920af5" style="width: 100.0%; height: 100.0%;">Euro Caps (Rotterdam, NL) Pod Manufacturing</div>`)[0];
+            popup_3de8a3e5d7eacba81fa92549e76399df.setContent(html_821ee12295f816121370485ad1920af5);
+        
+
+        marker_362acfaa750902c6fdffc276700318a8.bindPopup(popup_3de8a3e5d7eacba81fa92549e76399df)
+        ;
+
+        
+    
+    
+            marker_362acfaa750902c6fdffc276700318a8.bindTooltip(
+                `<div>
+                     Euro Caps (Rotterdam, NL)
+Pod Manufacturing
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_7a4b06461b8fe10692008c223ecb21d9 = L.marker(
+                [51.6167, 5.55],
+                {}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            var icon_de3bc15c5cb4a976fa8c2fe1275f08bc = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "warehouse", "iconColor": "white", "markerColor": "blue", "prefix": "fa"}
+            );
+            marker_7a4b06461b8fe10692008c223ecb21d9.setIcon(icon_de3bc15c5cb4a976fa8c2fe1275f08bc);
+        
+    
+        var popup_24b7903ded38e06ecf7d8d3d27197bfc = L.popup({"maxWidth": "100%"});
+
+        
+            var html_29de24138fb6589626ad495d7a6c1b27 = $(`<div id="html_29de24138fb6589626ad495d7a6c1b27" style="width: 100.0%; height: 100.0%;">Veghel DC (Netherlands) Central Distribution Hub</div>`)[0];
+            popup_24b7903ded38e06ecf7d8d3d27197bfc.setContent(html_29de24138fb6589626ad495d7a6c1b27);
+        
+
+        marker_7a4b06461b8fe10692008c223ecb21d9.bindPopup(popup_24b7903ded38e06ecf7d8d3d27197bfc)
+        ;
+
+        
+    
+    
+            marker_7a4b06461b8fe10692008c223ecb21d9.bindTooltip(
+                `<div>
+                     Veghel DC (Netherlands)
+Central Distribution Hub
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_c9f95e724426c489c3047e54925d225c = L.circleMarker(
+                [51.1657, 10.4515],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+        var popup_4b7d45f830bfbbbc441cb4a8fcfa8b39 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_50a4612045526e4c243315949c9bbdce = $(`<div id="html_50a4612045526e4c243315949c9bbdce" style="width: 100.0%; height: 100.0%;">Germany (High volume)</div>`)[0];
+            popup_4b7d45f830bfbbbc441cb4a8fcfa8b39.setContent(html_50a4612045526e4c243315949c9bbdce);
+        
+
+        circle_marker_c9f95e724426c489c3047e54925d225c.bindPopup(popup_4b7d45f830bfbbbc441cb4a8fcfa8b39)
+        ;
+
+        
+    
+    
+            circle_marker_c9f95e724426c489c3047e54925d225c.bindTooltip(
+                `<div>
+                     Germany (High volume)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_1ef00f39549238d3185b67c91c0555cc = L.circleMarker(
+                [46.6034, 1.8883],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+        var popup_c342494b9d8263fc3f101064766c257a = L.popup({"maxWidth": "100%"});
+
+        
+            var html_6d5f1e252ee2560fc391d6c6171c24e9 = $(`<div id="html_6d5f1e252ee2560fc391d6c6171c24e9" style="width: 100.0%; height: 100.0%;">France (High volume)</div>`)[0];
+            popup_c342494b9d8263fc3f101064766c257a.setContent(html_6d5f1e252ee2560fc391d6c6171c24e9);
+        
+
+        circle_marker_1ef00f39549238d3185b67c91c0555cc.bindPopup(popup_c342494b9d8263fc3f101064766c257a)
+        ;
+
+        
+    
+    
+            circle_marker_1ef00f39549238d3185b67c91c0555cc.bindTooltip(
+                `<div>
+                     France (High volume)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_ced4c20d3acfe0b50e3ec4086ce29764 = L.circleMarker(
+                [55.3781, -3.436],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+        var popup_2ce26bbffcabe59b40324bd0d50bfde2 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_9156490f1a40da09132d535b6e75507a = $(`<div id="html_9156490f1a40da09132d535b6e75507a" style="width: 100.0%; height: 100.0%;">UK (High volume)</div>`)[0];
+            popup_2ce26bbffcabe59b40324bd0d50bfde2.setContent(html_9156490f1a40da09132d535b6e75507a);
+        
+
+        circle_marker_ced4c20d3acfe0b50e3ec4086ce29764.bindPopup(popup_2ce26bbffcabe59b40324bd0d50bfde2)
+        ;
+
+        
+    
+    
+            circle_marker_ced4c20d3acfe0b50e3ec4086ce29764.bindTooltip(
+                `<div>
+                     UK (High volume)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_f91cdb9a6066485135ff279adc139028 = L.circleMarker(
+                [41.8719, 12.5674],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "red", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 3}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+        var popup_3a1c0ca4c45627c058f63ff08d081cd3 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_b474a0317bb417e2c93919e41ad315f7 = $(`<div id="html_b474a0317bb417e2c93919e41ad315f7" style="width: 100.0%; height: 100.0%;">Italy (High volume)</div>`)[0];
+            popup_3a1c0ca4c45627c058f63ff08d081cd3.setContent(html_b474a0317bb417e2c93919e41ad315f7);
+        
+
+        circle_marker_f91cdb9a6066485135ff279adc139028.bindPopup(popup_3a1c0ca4c45627c058f63ff08d081cd3)
+        ;
+
+        
+    
+    
+            circle_marker_f91cdb9a6066485135ff279adc139028.bindTooltip(
+                `<div>
+                     Italy (High volume)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_06b42c8a1d17942a24872b74ddfa0c14 = L.circleMarker(
+                [60.1282, 18.6435],
+                {"bubblingMouseEvents": true, "color": "orange", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "orange", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 6, "stroke": true, "weight": 3}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+        var popup_075252a450ab7d7b48d99f0bd04778e4 = L.popup({"maxWidth": "100%"});
+
+        
+            var html_931fc113c755ac9ff3256d40cb2d2c42 = $(`<div id="html_931fc113c755ac9ff3256d40cb2d2c42" style="width: 100.0%; height: 100.0%;">Sweden (Medium volume)</div>`)[0];
+            popup_075252a450ab7d7b48d99f0bd04778e4.setContent(html_931fc113c755ac9ff3256d40cb2d2c42);
+        
+
+        circle_marker_06b42c8a1d17942a24872b74ddfa0c14.bindPopup(popup_075252a450ab7d7b48d99f0bd04778e4)
+        ;
+
+        
+    
+    
+            circle_marker_06b42c8a1d17942a24872b74ddfa0c14.bindTooltip(
+                `<div>
+                     Sweden (Medium volume)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var circle_marker_3d418c3d2bb993b121ce0a51d1fb5d44 = L.circleMarker(
+                [51.9194, 19.1451],
+                {"bubblingMouseEvents": true, "color": "gray", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "gray", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 4, "stroke": true, "weight": 3}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+        var popup_5cafe292eed3fadbcc25cb3d50ed661b = L.popup({"maxWidth": "100%"});
+
+        
+            var html_0102a9f7a97686bfb51139ff0d21d79a = $(`<div id="html_0102a9f7a97686bfb51139ff0d21d79a" style="width: 100.0%; height: 100.0%;">Poland (Low volume)</div>`)[0];
+            popup_5cafe292eed3fadbcc25cb3d50ed661b.setContent(html_0102a9f7a97686bfb51139ff0d21d79a);
+        
+
+        circle_marker_3d418c3d2bb993b121ce0a51d1fb5d44.bindPopup(popup_5cafe292eed3fadbcc25cb3d50ed661b)
+        ;
+
+        
+    
+    
+            circle_marker_3d418c3d2bb993b121ce0a51d1fb5d44.bindTooltip(
+                `<div>
+                     Poland (Low volume)
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_183db259bc44106a9d7ca22db32b39e1 = L.polyline(
+                [[47.8095, 13.055], [51.6167, 5.55]],
+                {"bubblingMouseEvents": true, "color": "green", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "green", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 4}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            poly_line_183db259bc44106a9d7ca22db32b39e1.bindTooltip(
+                `<div>
+                     Bottles: Austria → Veghel DC
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_15a8ddb1ded79908332e93c863c4651c = L.polyline(
+                [[51.9244, 4.4777], [51.6167, 5.55]],
+                {"bubblingMouseEvents": true, "color": "purple", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "purple", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.7, "smoothFactor": 1.0, "stroke": true, "weight": 4}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            poly_line_15a8ddb1ded79908332e93c863c4651c.bindTooltip(
+                `<div>
+                     Pods: Rotterdam → Veghel DC
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_e720cb1fd34c6952f09f27e794fa18d3 = L.polyline(
+                [[51.6167, 5.55], [51.1657, 10.4515]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            poly_line_e720cb1fd34c6952f09f27e794fa18d3.bindTooltip(
+                `<div>
+                     Veghel DC → Germany
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_b0239df5ea91298ad7b7ae2c68a405ab = L.polyline(
+                [[51.6167, 5.55], [46.6034, 1.8883]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            poly_line_b0239df5ea91298ad7b7ae2c68a405ab.bindTooltip(
+                `<div>
+                     Veghel DC → France
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_5cd01ba150d95a15c8752e02bc38749d = L.polyline(
+                [[51.6167, 5.55], [55.3781, -3.436]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            poly_line_5cd01ba150d95a15c8752e02bc38749d.bindTooltip(
+                `<div>
+                     Veghel DC → UK
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_5c02867d41236403d8e10321d314a8ea = L.polyline(
+                [[51.6167, 5.55], [41.8719, 12.5674]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            poly_line_5c02867d41236403d8e10321d314a8ea.bindTooltip(
+                `<div>
+                     Veghel DC → Italy
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_4946ba8d945fd36293cbf7aa8832a825 = L.polyline(
+                [[51.6167, 5.55], [60.1282, 18.6435]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            poly_line_4946ba8d945fd36293cbf7aa8832a825.bindTooltip(
+                `<div>
+                     Veghel DC → Sweden
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var poly_line_d1a3c6f039e11c5847ef50945874cace = L.polyline(
+                [[51.6167, 5.55], [51.9194, 19.1451]],
+                {"bubblingMouseEvents": true, "color": "blue", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "blue", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.4, "smoothFactor": 1.0, "stroke": true, "weight": 2}
+            ).addTo(map_2d63217e15db88831464a8d191b43eb0);
+        
+    
+            poly_line_d1a3c6f039e11c5847ef50945874cace.bindTooltip(
+                `<div>
+                     Veghel DC → Poland
+                 </div>`,
+                {"sticky": true}
+            );
+        
+</script>
+</html>
