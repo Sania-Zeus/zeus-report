@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clustering Story Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,600,700|Lato:400,700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "IBM Plex Sans", "Lato", Arial, sans-serif;
+            background: #f7f8fa;
+            color: #222;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: linear-gradient(90deg, #766CDB 0%, #7CD9A5 100%);
+            color: #fff;
+            padding: 36px 0 24px 0;
+            text-align: center;
+            box-shadow: 0 2px 12px #e0e0e0;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            letter-spacing: 1px;
+        }
+        .header .subtitle {
+            font-size: 1.2em;
+            font-weight: 400;
+            opacity: 0.95;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px #e0e0e0;
+            padding: 32px 32px 24px 32px;
+            margin-bottom: 32px;
+        }
+        .screenshot-img {
+            display: block;
+            margin: 0 auto;
+            max-width: 90%;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #eee;
+            margin-bottom: 18px;
+        }
+        .caption {
+            font-size: 1.13em;
+            color: #555;
+            margin-top: 8px;
+            line-height: 1.6;
+            text-align: center;
+        }
+        .impact-callout {
+            background: linear-gradient(90deg, #7CD9A5 0%, #766CDB 100%);
+            color: #fff;
+            border-radius: 10px;
+            padding: 24px 32px;
+            margin-bottom: 32px;
+            font-size: 1.18em;
+            font-weight: 600;
+            box-shadow: 0 2px 12px #e0e0e0;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .impact-callout span {
+            margin-right: 32px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .benefits-list {
+            margin: 0;
+            padding: 0 0 0 18px;
+            font-size: 1.08em;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 8px; }
+            .card { padding: 16px 8px 12px 8px; }
+            .impact-callout { flex-direction: column; padding: 16px 8px; }
+            .impact-callout span { margin-right: 0; }
+            .screenshot-img { max-width: 95%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Clustering Story Dashboard</h1>
+        <div class="subtitle">From Fragmented Loads to Full-Fleet Precision</div>
+    </div>
+    <div class="container">
+        <div class="impact-callout">
+            <span>💶 <b>€3.9M Annual Savings</b></span>
+            <span>🌱 <b>26% Emission Reduction</b></span>
+            <span>🚚 <b>97% OTIF Performance</b></span>
+            <span>⏱️ <b>60% Less Planning Time</b></span>
+        </div>
+        <div class="card">
+            <img class="screenshot-img" src="clustering_story_dashboard.png" alt="Dashboard Screenshot">
+            <div class="caption">
+                This screenshot highlights the latest state of your logistics dashboard, perfectly aligned with your brand and story.<br>
+                The visual is centered and presented in a modern card, making it the focal point of your dashboard.
+            </div>
+        </div>
+        <div class="card">
+            <h2 style="margin-top:0;font-size:1.3em;color:#766CDB;font-weight:700;">Key Benefits Achieved</h2>
+            <ul class="benefits-list">
+                <li>€3.9M annual savings from bundling, fill rate, and planning optimization</li>
+                <li>26% reduction in emissions, driven by fewer empty miles</li>
+                <li>97% OTIF (On Time In Full) performance with smoother route reliability</li>
+                <li>60% less planning workload for the transport team</li>
+                <li>Real-time visibility and demand-driven planning</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
