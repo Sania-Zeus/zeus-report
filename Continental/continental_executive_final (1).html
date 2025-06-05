@@ -1,0 +1,136 @@
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Continental AG Executive Supply Chain Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%); 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; padding: 20px;
+        }
+        .dashboard-title {
+            font-size: 2.5rem; font-weight: 700; color: #171717; text-align: center;
+            margin: 20px 0 30px 0; letter-spacing: -1px;
+        }
+        .controls-section {
+            background: rgba(255,255,255,0.95); border-radius: 16px; padding: 24px;
+            margin: 0 auto 20px auto; max-width: 1200px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .button-group {
+            display: flex; justify-content: center; align-items: center; gap: 12px; 
+            margin-bottom: 16px; flex-wrap: wrap;
+        }
+        .button-label { 
+            font-size: 1.1rem; color: #374151; margin-right: 8px; font-weight: 600; 
+            min-width: 70px;
+        }
+        .filter-btn {
+            background: linear-gradient(135deg, #2563EB 0%, #24EB84 100%);
+            border: none; color: #fff; font-size: 1rem; font-weight: 600;
+            border-radius: 25px; padding: 10px 20px; cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(37,99,235,0.25);
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, #24EB84 0%, #2563EB 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(36,235,132,0.4);
+        }
+        .map-wrapper {
+            max-width: 1600px; margin: 0 auto; background: #fff; 
+            border-radius: 16px; overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+        .status-bar {
+            background: linear-gradient(90deg, #2563EB, #24EB84);
+            color: white; text-align: center; padding: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="dashboard-title">Continental AG Executive Supply Chain Dashboard</h1>
+    
+    <div class="controls-section">
+        <div class="button-group">
+            <span class="button-label">Region:</span>
+            <button class="filter-btn active" onclick="filterMap('region','All')">All</button>
+            <button class="filter-btn" onclick="filterMap('region','EMEA')">EMEA</button>
+            <button class="filter-btn" onclick="filterMap('region','APAC')">APAC</button>
+            <button class="filter-btn" onclick="filterMap('region','Americas')">Americas</button>
+        </div>
+        <div class="button-group">
+            <span class="button-label">Type:</span>
+            <button class="filter-btn active" onclick="filterMap('type','All')">All</button>
+            <button class="filter-btn" onclick="filterMap('type','Manufacturing')">Manufacturing</button>
+            <button class="filter-btn" onclick="filterMap('type','Distribution')">Distribution</button>
+        </div>
+        <div class="button-group">
+            <span class="button-label">Status:</span>
+            <button class="filter-btn active" onclick="filterMap('status','All')">All</button>
+            <button class="filter-btn" onclick="filterMap('status','Optimal')">Optimal</button>
+            <button class="filter-btn" onclick="filterMap('status','Warning')">Warning</button>
+            <button class="filter-btn" onclick="filterMap('status','Critical')">Critical</button>
+        </div>
+    </div>
+
+    <div class="map-wrapper">
+        <div class="status-bar">Interactive Global Supply Chain Network • Use filters above to explore</div>
+    <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>                <div id="480a0d93-3a93-46cd-85de-7cd090d639ae" class="plotly-graph-div" style="height:900px; width:1500px;"></div>            <script type="text/javascript">                                    window.PLOTLYENV=window.PLOTLYENV || {};                                    if (document.getElementById("480a0d93-3a93-46cd-85de-7cd090d639ae")) {                    Plotly.newPlot(                        "480a0d93-3a93-46cd-85de-7cd090d639ae",                        [{"hoverinfo":"none","lat":[52.25354011884736,50.476176145774936],"line":{"color":"rgba(37,99,235,0.6)","width":5},"lon":[9.859115011743208,8.365404509853434],"mode":"lines","opacity":0.8,"showlegend":false,"type":"scattermapbox"},{"hoverinfo":"none","lat":[49.46971430640991,50.476176145774936],"line":{"color":"rgba(37,99,235,0.6)","width":5},"lon":[12.304072577796045,8.365404509853434],"mode":"lines","opacity":0.8,"showlegend":false,"type":"scattermapbox"},{"hoverinfo":"none","lat":[45.9799939418114,50.476176145774936],"line":{"color":"rgba(37,99,235,0.6)","width":5},"lon":[20.728584494295802,8.365404509853434],"mode":"lines","opacity":0.8,"showlegend":false,"type":"scattermapbox"},{"hoverinfo":"none","lat":[51.37265848419704,50.476176145774936],"line":{"color":"rgba(37,99,235,0.6)","width":5},"lon":[9.090909852161994,8.365404509853434],"mode":"lines","opacity":0.8,"showlegend":false,"type":"scattermapbox"},{"hoverinfo":"none","lat":[41.01701864044244,50.4080836121682],"line":{"color":"rgba(37,99,235,0.6)","width":5},"lon":[-8.084557359199579,4.032824967207101],"mode":"lines","opacity":0.8,"showlegend":false,"type":"scattermapbox"},{"hoverinfo":"none","lat":[54.1889945203362,50.476176145774936],"line":{"color":"rgba(37,99,235,0.6)","width":5},"lon":[35.98533911067828,8.365404509853434],"mode":"lines","opacity":0.8,"showlegend":false,"type":"scattermapbox"},{"hoverinfo":"none","lat":[31.104540118847364,1.5839939418114053],"line":{"color":"rgba(37,99,235,0.6)","width":5},"lon":[121.12901864044244,103.3770836121682],"mode":"lines","opacity":0.8,"showlegend":false,"type":"scattermapbox"},{"hoverinfo":"none","lat":[32.270714306409914,1.5839939418114053],"line":{"color":"rgba(37,99,235,0.6)","width":5},"lon":[116.88299452033621,103.3770836121682],"mode":"lines","opacity":0.8,"showlegend":false,"type":"scattermapbox"},{"hoverinfo":"none","lat":[38.191540118847364,33.22671430640992],"line":{"color":"rgba(37,99,235,0.6)","width":5},"lon":[-89.25198135955756,-97.14100547966379],"mode":"lines","opacity":0.8,"showlegend":false,"type":"scattermapbox"},{"hovertemplate":"%{text}\u003cextra\u003e\u003c\u002fextra\u003e","lat":[52.25354011884736,45.9799939418114,51.37265848419704],"lon":[9.859115011743208,20.728584494295802,9.090909852161994],"marker":{"color":"#24EB84","opacity":0.92,"size":20},"mode":"markers","name":"EMEA Manufacturing Optimal","showlegend":true,"text":["\u003cb\u003eHanover Tire Manufacturing\u003c\u002fb\u003e\u003cbr\u003eType: Manufacturing\u003cbr\u003eStatus: Optimal\u003cbr\u003eEfficiency: 85.0%\u003cbr\u003eOutput: 2,125,000 units\u003cbr\u003eRevenue: $450M","\u003cb\u003eTimisoara Production Hub\u003c\u002fb\u003e\u003cbr\u003eType: Manufacturing\u003cbr\u003eStatus: Optimal\u003cbr\u003eEfficiency: 78.0%\u003cbr\u003eOutput: 936,000 units\u003cbr\u003eRevenue: $180M","\u003cb\u003eKorbach Specialty Tires\u003c\u002fb\u003e\u003cbr\u003eType: Manufacturing\u003cbr\u003eStatus: Optimal\u003cbr\u003eEfficiency: 82.0%\u003cbr\u003eOutput: 738,000 units\u003cbr\u003eRevenue: $150M"],"type":"scattermapbox"},{"hovertemplate":"%{text}\u003cextra\u003e\u003c\u002fextra\u003e","lat":[49.46971430640991,41.01701864044244],"lon":[12.304072577796045,-8.084557359199579],"marker":{"color":"#EF4444","opacity":0.92,"size":20},"mode":"markers","name":"EMEA Manufacturing Critical","showlegend":true,"text":["\u003cb\u003eRegensburg Advanced Materials\u003c\u002fb\u003e\u003cbr\u003eType: Manufacturing\u003cbr\u003eStatus: Critical\u003cbr\u003eEfficiency: 110.0%\u003cbr\u003eOutput: 1,980,000 units\u003cbr\u003eRevenue: $320M","\u003cb\u003eLousado Plant\u003c\u002fb\u003e\u003cbr\u003eType: Manufacturing\u003cbr\u003eStatus: Critical\u003cbr\u003eEfficiency: 106.0%\u003cbr\u003eOutput: 636,000 units\u003cbr\u003eRevenue: $95M"],"type":"scattermapbox"},{"hovertemplate":"%{text}\u003cextra\u003e\u003c\u002fextra\u003e","lat":[54.1889945203362],"lon":[35.98533911067828],"marker":{"color":"#F59E0B","opacity":0.92,"size":20},"mode":"markers","name":"EMEA Manufacturing Warning","showlegend":true,"text":["\u003cb\u003eKaluga Plant\u003c\u002fb\u003e\u003cbr\u003eType: Manufacturing\u003cbr\u003eStatus: Warning\u003cbr\u003eEfficiency: 93.0%\u003cbr\u003eOutput: 1,395,000 units\u003cbr\u003eRevenue: $240M"],"type":"scattermapbox"},{"hovertemplate":"%{text}\u003cextra\u003e\u003c\u002fextra\u003e","lat":[50.4080836121682,50.476176145774936],"lon":[4.032824967207101,8.365404509853434],"marker":{"color":"#24EB84","opacity":0.92,"size":16},"mode":"markers","name":"EMEA Distribution Optimal","showlegend":true,"text":["\u003cb\u003eBrussels Distribution\u003c\u002fb\u003e\u003cbr\u003eType: Distribution\u003cbr\u003eStatus: Optimal\u003cbr\u003eEfficiency: 70.0%\u003cbr\u003eOutput: 595,000 units\u003cbr\u003eRevenue: $85M","\u003cb\u003eFrankfurt Hub\u003c\u002fb\u003e\u003cbr\u003eType: Distribution\u003cbr\u003eStatus: Optimal\u003cbr\u003eEfficiency: 80.0%\u003cbr\u003eOutput: 880,000 units\u003cbr\u003eRevenue: $130M"],"type":"scattermapbox"},{"hovertemplate":"%{text}\u003cextra\u003e\u003c\u002fextra\u003e","lat":[31.104540118847364,32.270714306409914],"lon":[121.12901864044244,116.88299452033621],"marker":{"color":"#24EB84","opacity":0.92,"size":20},"mode":"markers","name":"APAC Manufacturing Optimal","showlegend":true,"text":["\u003cb\u003eShanghai Mega Complex\u003c\u002fb\u003e\u003cbr\u003eType: Manufacturing\u003cbr\u003eStatus: Optimal\u003cbr\u003eEfficiency: 88.0%\u003cbr\u003eOutput: 3,696,000 units\u003cbr\u003eRevenue: $680M","\u003cb\u003eHefei Manufacturing\u003c\u002fb\u003e\u003cbr\u003eType: Manufacturing\u003cbr\u003eStatus: Optimal\u003cbr\u003eEfficiency: 88.0%\u003cbr\u003eOutput: 2,464,000 units\u003cbr\u003eRevenue: $420M"],"type":"scattermapbox"},{"hovertemplate":"%{text}\u003cextra\u003e\u003c\u002fextra\u003e","lat":[1.5839939418114053],"lon":[103.3770836121682],"marker":{"color":"#24EB84","opacity":0.92,"size":16},"mode":"markers","name":"APAC Distribution Optimal","showlegend":true,"text":["\u003cb\u003eSingapore Logistics\u003c\u002fb\u003e\u003cbr\u003eType: Distribution\u003cbr\u003eStatus: Optimal\u003cbr\u003eEfficiency: 82.0%\u003cbr\u003eOutput: 984,000 units\u003cbr\u003eRevenue: $140M"],"type":"scattermapbox"},{"hovertemplate":"%{text}\u003cextra\u003e\u003c\u002fextra\u003e","lat":[19.17465848419704],"lon":[73.24317614577492],"marker":{"color":"#EF4444","opacity":0.92,"size":16},"mode":"markers","name":"APAC Distribution Critical","showlegend":true,"text":["\u003cb\u003eMumbai Warehouse\u003c\u002fb\u003e\u003cbr\u003eType: Distribution\u003cbr\u003eStatus: Critical\u003cbr\u003eEfficiency: 105.0%\u003cbr\u003eOutput: 735,000 units\u003cbr\u003eRevenue: $75M"],"type":"scattermapbox"},{"hovertemplate":"%{text}\u003cextra\u003e\u003c\u002fextra\u003e","lat":[38.191540118847364],"lon":[-89.25198135955756],"marker":{"color":"#F59E0B","opacity":0.92,"size":20},"mode":"markers","name":"Americas Manufacturing Warning","showlegend":true,"text":["\u003cb\u003eMt. Vernon Operations\u003c\u002fb\u003e\u003cbr\u003eType: Manufacturing\u003cbr\u003eStatus: Warning\u003cbr\u003eEfficiency: 104.0%\u003cbr\u003eOutput: 2,288,000 units\u003cbr\u003eRevenue: $380M"],"type":"scattermapbox"},{"hovertemplate":"%{text}\u003cextra\u003e\u003c\u002fextra\u003e","lat":[19.663993941811405,-23.451341515802966],"lon":[-99.57491638783179,-46.266823854225066],"marker":{"color":"#24EB84","opacity":0.92,"size":16},"mode":"markers","name":"Americas Distribution Optimal","showlegend":true,"text":["\u003cb\u003eMexico City Hub\u003c\u002fb\u003e\u003cbr\u003eType: Distribution\u003cbr\u003eStatus: Optimal\u003cbr\u003eEfficiency: 80.0%\u003cbr\u003eOutput: 520,000 units\u003cbr\u003eRevenue: $65M","\u003cb\u003eS\u00e3o Paulo Center\u003c\u002fb\u003e\u003cbr\u003eType: Distribution\u003cbr\u003eStatus: Optimal\u003cbr\u003eEfficiency: 80.0%\u003cbr\u003eOutput: 640,000 units\u003cbr\u003eRevenue: $95M"],"type":"scattermapbox"},{"hovertemplate":"%{text}\u003cextra\u003e\u003c\u002fextra\u003e","lat":[33.22671430640992],"lon":[-97.14100547966379],"marker":{"color":"#F59E0B","opacity":0.92,"size":16},"mode":"markers","name":"Americas Distribution Warning","showlegend":true,"text":["\u003cb\u003eDallas Distribution\u003c\u002fb\u003e\u003cbr\u003eType: Distribution\u003cbr\u003eStatus: Warning\u003cbr\u003eEfficiency: 95.1%\u003cbr\u003eOutput: 903,500 units\u003cbr\u003eRevenue: $110M"],"type":"scattermapbox"}],                        {"font":{"color":"#171717","family":"Inter","size":17},"height":900,"legend":{"bgcolor":"rgba(255,255,255,0.97)","bordercolor":"#E5E7EB","borderwidth":1,"font":{"size":15},"x":0.01,"y":0.99},"mapbox":{"center":{"lat":30,"lon":20},"style":"carto-positron","zoom":1.3},"margin":{"b":0,"l":0,"r":0,"t":80},"showlegend":true,"title":{"font":{"color":"#171717","family":"Inter","size":24},"text":"Continental AG Global Supply Chain Network","x":0.5},"width":1500,"template":{"data":{"histogram2dcontour":[{"type":"histogram2dcontour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"choropleth":[{"type":"choropleth","colorbar":{"outlinewidth":0,"ticks":""}}],"histogram2d":[{"type":"histogram2d","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmap":[{"type":"heatmap","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"heatmapgl":[{"type":"heatmapgl","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"contourcarpet":[{"type":"contourcarpet","colorbar":{"outlinewidth":0,"ticks":""}}],"contour":[{"type":"contour","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"surface":[{"type":"surface","colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]}],"mesh3d":[{"type":"mesh3d","colorbar":{"outlinewidth":0,"ticks":""}}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"parcoords":[{"type":"parcoords","line":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolargl":[{"type":"scatterpolargl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"scattergeo":[{"type":"scattergeo","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterpolar":[{"type":"scatterpolar","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"scattergl":[{"type":"scattergl","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatter3d":[{"type":"scatter3d","line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattermapbox":[{"type":"scattermapbox","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scatterternary":[{"type":"scatterternary","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"scattercarpet":[{"type":"scattercarpet","marker":{"colorbar":{"outlinewidth":0,"ticks":""}}}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}],"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"pie":[{"automargin":true,"type":"pie"}]},"layout":{"autotypenumbers":"strict","colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"hovermode":"closest","hoverlabel":{"align":"left"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"bgcolor":"#E5ECF6","angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"ternary":{"bgcolor":"#E5ECF6","aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]]},"xaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"yaxis":{"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","automargin":true,"zerolinewidth":2},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white","gridwidth":2}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"geo":{"bgcolor":"white","landcolor":"#E5ECF6","subunitcolor":"white","showland":true,"showlakes":true,"lakecolor":"white"},"title":{"x":0.05},"mapbox":{"style":"light"}}}},                        {"responsive": true}                    )                };                            </script>        </div>
+    </div>
+    
+    <script>
+        let activeFilters = { region: 'All', type: 'All', status: 'All' };
+        
+        function filterMap(category, value) {
+            // Update button states
+            document.querySelectorAll(`[onclick*="${category}"]`).forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update filter state
+            activeFilters[category] = value;
+            
+            // Apply filters to map
+            const gd = document.querySelector('.plotly-graph-div');
+            if (!gd || !gd.data) return;
+            
+            gd.data.forEach((trace, i) => {
+                let show = true;
+                
+                if (trace.name) {
+                    if (activeFilters.region !== 'All' && !trace.name.includes(activeFilters.region)) {
+                        show = false;
+                    }
+                    if (activeFilters.type !== 'All' && !trace.name.includes(activeFilters.type)) {
+                        show = false;
+                    }
+                    if (activeFilters.status !== 'All' && !trace.name.includes(activeFilters.status)) {
+                        show = false;
+                    }
+                }
+                
+                Plotly.restyle(gd, {visible: show}, [i]);
+            });
+            
+            // Update status bar
+            const statusBar = document.querySelector('.status-bar');
+            const activeCount = Object.values(activeFilters).filter(v => v !== 'All').length;
+            if (activeCount === 0) {
+                statusBar.textContent = 'Interactive Global Supply Chain Network • All facilities shown';
+            } else {
+                const activeFiltersText = Object.entries(activeFilters)
+                    .filter(([k,v]) => v !== 'All')
+                    .map(([k,v]) => `${k}: ${v}`)
+                    .join(' | ');
+                statusBar.textContent = `Filtered View: ${activeFiltersText}`;
+            }
+        }
+    </script>
+</body>
+</html>
