@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.6.0/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_c46011b5028f306849535abdd9c353f8 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+            </style>
+        
+</head>
+<body>
+    
+    <div style="position:fixed;top:12px;left:50%;transform:translateX(-50%);background:#fff;padding:10px 22px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);font-family:Lato,Arial,sans-serif;font-size:18px;font-weight:700;color:#222;z-index:9999;">Goodyear EU Supply Chain</div>
+    
+
+<style>.kpi-grid { display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:12px; } .kpi-grid div{ padding:2px 0; }</style>
+<div id='kpiCard' style='position:fixed;bottom:20px;right:20px;background:#fff;padding:12px 16px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.2);font-family:Lato,Arial,sans-serif;z-index:9999;min-width:190px;'>
+  <div style='font-weight:700;margin-bottom:6px;color:#222;'>Zeus AI Optimisation</div>
+  <div class='kpi-grid'>
+    <div>Trailer Util %</div><div id='util'>99.7</div>
+    <div>Plant→RDC Trucks/wk</div><div id='pTrucks'>95</div>
+    <div>RDC→LDC Trucks/wk</div><div id='rTrucks'>145</div>
+    <div>€ / Tyre</div><div id='cost'>1.20</div>
+    <div>CO₂ kg / Tyre</div><div id='co2'>0.50</div>
+  </div>
+  <button onclick='toggleZeus()' style='margin-top:8px;width:100%;background:#2176FF;color:#fff;border:none;border-radius:4px;padding:6px 0;font-size:12px;'>Apply Zeus AI</button>
+</div>
+<script>
+var zeus=false;
+var polylines=[{"id": "poly_line_c2219bc69bed0997bcc9434fc0b2db0a", "before": 1.9, "after": 1.62}, {"id": "poly_line_e1a305087ff14f1ca0713d911ea33a12", "before": 1.9, "after": 1.62}, {"id": "poly_line_65327434fc86f1a8f9eaff10ae620a06", "before": 2.9, "after": 2.48}, {"id": "poly_line_1b4ba800f7e7ddd9ae4883d8054c631b", "before": 2.9, "after": 2.48}, {"id": "poly_line_758ac1596ee52517dabae5090e782b4e", "before": 0.5, "after": 0.0}, {"id": "poly_line_6f53811b7edd9344eb4a22c1b8b8f05b", "before": 2.9, "after": 2.48}, {"id": "poly_line_84b69678985f01884341844ba3631a94", "before": 0.4, "after": 0.0}];
+function toggleZeus(){
+  zeus=!zeus;
+  document.getElementById('util').innerHTML= zeus? '100':'99.7';
+  document.getElementById('pTrucks').innerHTML= zeus? '81':'95';
+  document.getElementById('rTrucks').innerHTML= zeus? '124':'145';
+  document.getElementById('cost').innerHTML= zeus? '1.05':'1.20';
+  document.getElementById('co2').innerHTML= zeus? '0.43':'0.50';
+  polylines.forEach(function(p){
+     var obj=window[p.id];
+     if(obj){ obj.setStyle({weight: zeus? p.after : p.before}); }
+  });
+  document.querySelector('#kpiCard button').innerText= zeus? 'Reset':'Apply Zeus AI';
+}
+</script>
+
+    
+            <div class="folium-map" id="map_c46011b5028f306849535abdd9c353f8" ></div>
+        
+<div style="backdrop-filter:blur(7px);background:rgba(255,255,255,0.55);position:fixed;top:12px;left:50%;transform:translateX(-50%);padding:10px 24px;font-family:Lato,Arial,sans-serif;font-weight:700;font-size:18px;color:#222;border-radius:10px;z-index:9999;box-shadow:0 4px 14px rgba(0,0,0,0.15);">Goodyear EU Supply Chain</div>
+</body>
+<script>
+    
+    
+            var map_c46011b5028f306849535abdd9c353f8 = L.map(
+                "map_c46011b5028f306849535abdd9c353f8",
+                {
+                    center: [50.0, 8.0],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 5,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_c4a7b68978b955c948928182bc684a2e = L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {"attribution": "Data by \u0026copy; \u003ca href=\"http://openstreetmap.org\"\u003eOpenStreetMap\u003c/a\u003e, under \u003ca href=\"http://www.openstreetmap.org/copyright\"\u003eODbL\u003c/a\u003e.", "detectRetina": false, "maxNativeZoom": 18, "maxZoom": 18, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abc", "tms": false}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+            var poly_line_c2219bc69bed0997bcc9434fc0b2db0a = L.polyline(
+                [[50.5635, 9.684], [50.0796, 12.3739]],
+                {"bubblingMouseEvents": true, "color": "#766CDB", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#766CDB", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.9, "smoothFactor": 1.0, "stroke": true, "weight": 1.9}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+            var poly_line_e1a305087ff14f1ca0713d911ea33a12 = L.polyline(
+                [[50.1264, 8.9283], [50.0796, 12.3739]],
+                {"bubblingMouseEvents": true, "color": "#766CDB", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#766CDB", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.9, "smoothFactor": 1.0, "stroke": true, "weight": 1.9}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+            var poly_line_65327434fc86f1a8f9eaff10ae620a06 = L.polyline(
+                [[50.0796, 12.3739], [51.1657, 10.4515]],
+                {"bubblingMouseEvents": true, "color": "#D9CC8B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#D9CC8B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.9, "smoothFactor": 1.0, "stroke": true, "weight": 2.9}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+            var poly_line_1b4ba800f7e7ddd9ae4883d8054c631b = L.polyline(
+                [[50.0796, 12.3739], [41.8719, 12.5674]],
+                {"bubblingMouseEvents": true, "color": "#D9CC8B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#D9CC8B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.9, "smoothFactor": 1.0, "stroke": true, "weight": 2.9}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+            var poly_line_758ac1596ee52517dabae5090e782b4e = L.polyline(
+                [[50.0796, 12.3739], [46.2276, 2.2137]],
+                {"bubblingMouseEvents": true, "color": "#6C3DD1", "dashArray": "10,8", "dashOffset": null, "fill": false, "fillColor": "#6C3DD1", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.9, "smoothFactor": 1.0, "stroke": true, "weight": 0.5}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+            var poly_line_6f53811b7edd9344eb4a22c1b8b8f05b = L.polyline(
+                [[49.8942, 2.2957], [52.4862, -1.8904]],
+                {"bubblingMouseEvents": true, "color": "#D9CC8B", "dashArray": null, "dashOffset": null, "fill": false, "fillColor": "#D9CC8B", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.9, "smoothFactor": 1.0, "stroke": true, "weight": 2.9}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+            var poly_line_84b69678985f01884341844ba3631a94 = L.polyline(
+                [[49.8942, 2.2957], [52.1326, 5.2913]],
+                {"bubblingMouseEvents": true, "color": "#6C3DD1", "dashArray": "10,8", "dashOffset": null, "fill": false, "fillColor": "#6C3DD1", "fillOpacity": 0.2, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.9, "smoothFactor": 1.0, "stroke": true, "weight": 0.4}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+            var marker_f71dad84d945fa6577b5001d59d8c544 = L.marker(
+                [50.5635, 9.684],
+                {}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+        var custom_icon_fd9d857fb77e2fc251b08c0daed7b4e8 = L.icon({"iconSize": [25, 41], "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"});
+        marker_f71dad84d945fa6577b5001d59d8c544.setIcon(custom_icon_fd9d857fb77e2fc251b08c0daed7b4e8);
+        
+    
+            marker_f71dad84d945fa6577b5001d59d8c544.bindTooltip(
+                `<div>
+                     Fulda Plant
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_fadaca49cd4d8cb03ff933e6f88d7bee = L.marker(
+                [50.1264, 8.9283],
+                {}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+        var custom_icon_b600039540cef5442d5b0ed22c13b266 = L.icon({"iconSize": [25, 41], "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png"});
+        marker_fadaca49cd4d8cb03ff933e6f88d7bee.setIcon(custom_icon_b600039540cef5442d5b0ed22c13b266);
+        
+    
+            marker_fadaca49cd4d8cb03ff933e6f88d7bee.bindTooltip(
+                `<div>
+                     Hanau Plant
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_1172cee0a138d011b05da8c64ebc9955 = L.marker(
+                [50.0796, 12.3739],
+                {}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+        var custom_icon_64a1e0d67fe09d9cc87f76b3fea89fd9 = L.icon({"iconSize": [25, 41], "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png"});
+        marker_1172cee0a138d011b05da8c64ebc9955.setIcon(custom_icon_64a1e0d67fe09d9cc87f76b3fea89fd9);
+        
+    
+            marker_1172cee0a138d011b05da8c64ebc9955.bindTooltip(
+                `<div>
+                     Cheb RDC
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_9fb319a161441c56d96ddd70448e2fa8 = L.marker(
+                [49.8942, 2.2957],
+                {}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+        var custom_icon_9933f82330e09e422e2ad436fe72bb3e = L.icon({"iconSize": [25, 41], "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png"});
+        marker_9fb319a161441c56d96ddd70448e2fa8.setIcon(custom_icon_9933f82330e09e422e2ad436fe72bb3e);
+        
+    
+            marker_9fb319a161441c56d96ddd70448e2fa8.bindTooltip(
+                `<div>
+                     Amiens RDC
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_b0f7c3668cd28ba223de94294d976f85 = L.marker(
+                [51.1657, 10.4515],
+                {}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+        var custom_icon_674923c42b6c4a4386e04efe9c706531 = L.icon({"iconSize": [25, 41], "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"});
+        marker_b0f7c3668cd28ba223de94294d976f85.setIcon(custom_icon_674923c42b6c4a4386e04efe9c706531);
+        
+    
+            marker_b0f7c3668cd28ba223de94294d976f85.bindTooltip(
+                `<div>
+                     LDC Germany
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_7dde8ea5306518edef3d6ae7394ec344 = L.marker(
+                [46.2276, 2.2137],
+                {}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+        var custom_icon_bd2e0b7f6794c330e5e4faa3e2dc6098 = L.icon({"iconSize": [25, 41], "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"});
+        marker_7dde8ea5306518edef3d6ae7394ec344.setIcon(custom_icon_bd2e0b7f6794c330e5e4faa3e2dc6098);
+        
+    
+            marker_7dde8ea5306518edef3d6ae7394ec344.bindTooltip(
+                `<div>
+                     LDC France
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_3e5717af87e7d792aa40b639830112eb = L.marker(
+                [41.8719, 12.5674],
+                {}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+        var custom_icon_2cea921051e59102514975b9d7d7dd8e = L.icon({"iconSize": [25, 41], "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"});
+        marker_3e5717af87e7d792aa40b639830112eb.setIcon(custom_icon_2cea921051e59102514975b9d7d7dd8e);
+        
+    
+            marker_3e5717af87e7d792aa40b639830112eb.bindTooltip(
+                `<div>
+                     LDC Italy
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_1115d437aed31e43df848b64abfbea41 = L.marker(
+                [52.1326, 5.2913],
+                {}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+        var custom_icon_35628794e3c9cc21aae151e75e4e6149 = L.icon({"iconSize": [25, 41], "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"});
+        marker_1115d437aed31e43df848b64abfbea41.setIcon(custom_icon_35628794e3c9cc21aae151e75e4e6149);
+        
+    
+            marker_1115d437aed31e43df848b64abfbea41.bindTooltip(
+                `<div>
+                     LDC Benelux
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var marker_c3b1814e5839b2e17de854e306020b9c = L.marker(
+                [52.4862, -1.8904],
+                {}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+    
+        var custom_icon_44203e4a63542fdac90ec4464219dbd8 = L.icon({"iconSize": [25, 41], "iconUrl": "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png"});
+        marker_c3b1814e5839b2e17de854e306020b9c.setIcon(custom_icon_44203e4a63542fdac90ec4464219dbd8);
+        
+    
+            marker_c3b1814e5839b2e17de854e306020b9c.bindTooltip(
+                `<div>
+                     TyreFort UK
+                 </div>`,
+                {"sticky": true}
+            );
+        
+    
+            var layer_control_64f1bce5f20fb40bf7f8d25f311605e0 = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_c4a7b68978b955c948928182bc684a2e,
+                },
+                overlays :  {
+                },
+            };
+            L.control.layers(
+                layer_control_64f1bce5f20fb40bf7f8d25f311605e0.base_layers,
+                layer_control_64f1bce5f20fb40bf7f8d25f311605e0.overlays,
+                {"autoZIndex": true, "collapsed": true, "position": "topright"}
+            ).addTo(map_c46011b5028f306849535abdd9c353f8);
+        
+</script>
+</html>
